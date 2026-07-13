@@ -1,0 +1,8 @@
+/* ============================================================
+   SYFX — WEBFONTS
+   Inter for everything. JetBrains Mono for code / technical labels.
+   Loaded from Google Fonts. If self-hosting is required later,
+   replace these @import lines with local @font-face rules.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');

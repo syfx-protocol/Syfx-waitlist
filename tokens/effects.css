@@ -1,0 +1,54 @@
+/* ============================================================
+   SYFX — EFFECTS: GLOW, BORDERS, SHADOWS, MOTION
+   The ONLY decorative effect is the soft radial mint glow.
+   No gradient fills. No colored shadows beyond mint glow.
+   ============================================================ */
+
+:root {
+  /* ---- Mint glow (hero + CTA atmosphere only) ---- */
+  --glow-blur: 80px;
+  --glow-mint: rgba(0, 229, 160, 0.12);     /* primary orb opacity ~12% */
+  --glow-cyan: rgba(6, 182, 212, 0.08);     /* secondary orb opacity ~8% */
+  --glow-cta: radial-gradient(ellipse at center, rgba(0,229,160,0.08) 0%, transparent 70%); /* @kind other */
+
+  /* ---- Elevation shadows (subtle; dark UI) ---- */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-raised: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-mint-hover: 0 8px 30px rgba(0, 229, 160, 0.12);
+
+  /* ---- Borders ---- */
+  --border-w: 1px; /* @kind other */
+  --border-default: 1px solid var(--border);
+  --border-highlight: 1px solid var(--border-mint);
+
+  /* ---- Focus ring ---- */
+  --focus-outline: 2px solid var(--accent-mint);
+  --focus-offset: 2px;
+
+  /* ---- Motion ---- */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1); /* @kind other */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* @kind other */
+  --dur-fast: 150ms; /* @kind other */
+  --dur-base: 220ms; /* @kind other */
+  --dur-slow: 400ms; /* @kind other */
+  --pulse-cycle: 7s; /* @kind other */        /* glow orb slow scale pulse 6–8s */
+  --hover-lift: -2px;       /* card translateY on hover */
+}
+
+@keyframes syfx-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50%      { transform: scale(1.15); opacity: 1; }
+}
+
+@keyframes syfx-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.25; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
