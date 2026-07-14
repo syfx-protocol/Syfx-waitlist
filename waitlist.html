@@ -284,7 +284,9 @@
         setTimeout(syfxReportHeight, 320);
       });
     });
-    var WAITLIST_API_URL = 'http://localhost:8000/waitlist';
+    var IS_LOCAL = ['localhost', '127.0.0.1'].indexOf(location.hostname) !== -1;
+    // TODO: replace with the real Railway URL once the backend is deployed.
+    var WAITLIST_API_URL = IS_LOCAL ? 'http://localhost:8000/waitlist' : 'https://REPLACE_WITH_RAILWAY_URL/waitlist';
     document.getElementById('wform').addEventListener('submit', function (e) {
       e.preventDefault();
       var email = document.getElementById('email').value.trim();
