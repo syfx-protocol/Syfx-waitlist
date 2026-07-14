@@ -3,21 +3,27 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 import sqlite3
 import uvicorn
+import os
 from datetime import datetime
 
 app = FastAPI(title="Syfx Waitlist API")
 
 # Security: Enable CORS only for local development or specific domains
 # This prevents other websites from making requests to your API
+# Set ALLOWED_ORIGINS to a comma-separated list (e.g. "https://syfx.xyz,https://www.syfx.xyz")
+# in production; defaults to "*" so local development keeps working out of the box.
+_allowed_origins = os.environ.get("ALLOWED_ORIGINS", "*")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For local development. In production, change to your domain.
+    allow_origins=["*"] if _allowed_origins == "*" else [o.strip() for o in _allowed_origins.split(",")],
     allow_methods=["POST"],
     allow_headers=["*"],
 )
 
 # Database Setup
-DB_PATH = "waitlist.db"
+# Set DB_PATH to a mounted persistent volume path in production (e.g. "/data/waitlist.db"),
+# otherwise the database is lost on every redeploy on most hosting platforms.
+DB_PATH = os.environ.get("DB_PATH", "waitlist.db")
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -80,5 +86,6 @@ async def join_waitlist(request: Request, entry: WaitlistEntry):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 if __name__ == "__main__":
-    # Run locally on port 8000
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # Local dev default (port 8000); production uses the Procfile's uvicorn command,
+    # which binds to the platform-assigned $PORT instead.
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
