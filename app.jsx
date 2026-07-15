@@ -1497,8 +1497,7 @@ function FAQSection() {
 
 /* ===== WAITLIST CTA ===== */
 const IS_LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
-// TODO: replace with the real Railway URL once the backend is deployed.
-const WAITLIST_API_URL = IS_LOCAL ? 'http://localhost:8000/waitlist' : 'https://REPLACE_WITH_RAILWAY_URL/waitlist';
+const WAITLIST_API_URL = IS_LOCAL ? 'http://localhost:8000/waitlist' : 'https://syfx-waitlist-production.up.railway.app/waitlist';
 
 function WaitlistCTA() {
   const [email, setEmail] = useState('');
