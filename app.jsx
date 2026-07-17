@@ -373,23 +373,23 @@ const THREADS = [
 // chop talk -> build strategy -> trigger -> approve -> execute -> result -> why -> small loss
 const SCRIPT = [
   { role: 'user', text: "yo what's btc doing rn? feels choppy af 😅" },
-  { role: 'ai', text: "honestly it's a mess lol. stuck between 64k and 66k all week, no clean trend. Sentinel's flagging heavy funding on Hyperliquid too — longs are paying just to stay in rn." },
+  { role: 'ai', text: "honestly it's a mess lol. stuck between 64k and 66k all week, no clean trend. Sentinel's flagging heavy funding on Hyperliquid too. longs are paying just to stay in rn." },
   { role: 'user', text: "so basically everyone's long. smells like a trap" },
   { role: 'ai', text: "yeah pretty much. when funding gets that lopsided it usually flushes. if we lose 65k i'd rather be short than try to catch the knife 🔪" },
   { role: 'user', text: "ok forget btc for now. i actually wanted to play gold this week" },
-  { role: 'ai', chip: 'scanned 6 live sources', text: "gold's the cleaner trade tbh. CPI drops thursday so expect a wick, but ETF flows are net positive and the Fed's sounding dovish. RSI tapped 33 at the london open — that's literally your rulebook trigger 👀" },
+  { role: 'ai', chip: 'scanned 6 live sources', text: "gold's the cleaner trade tbh. CPI drops thursday so expect a wick, but ETF flows are net positive and the Fed's sounding dovish. RSI tapped 33 at the london open. that's literally your rulebook trigger 👀" },
   { role: 'user', text: "ok let's build it. small size though, i don't trust this market" },
-  { role: 'ai', text: "smart. here's what i'm locking in — long gold, 5x, 2% stop, target +5.5%, hard cap $250 risk. compiling it into your ZK-Rulebook now:", card: 'rulebook' },
+  { role: 'ai', text: "smart. here's what i'm locking in: long gold, 5x, 2% stop, target +5.5%, hard cap $250 risk. compiling it into your ZK-Rulebook now:", card: 'rulebook' },
   { role: 'ai', text: "locked 🔒 the Sentinel watches for the exact trigger and pings you before anything fires. you're always the one who approves." },
   { role: 'user', text: "perfect. ping me when it hits" },
-  { role: 'ai', chip: 'trigger detected · 1h', text: "ok we're live 🚨 RSI just printed 33 again at the london open. all three proofs are passing — want me to send it?", card: 'advisory' },
+  { role: 'ai', chip: 'trigger detected · 1h', text: "ok we're live 🚨 RSI just printed 33 again at the london open. all three proofs are passing. want me to send it?", card: 'advisory' },
   { role: 'user', text: "send it 🚀" },
   { role: 'ai', text: "executing through your vault 🔐 ... filled at 2,401.0. sit tight, i'll watch it for you." },
   { role: 'ai', text: "boom 💚 just closed at target. here's the receipt:", card: 'win' },
   { role: 'user', text: "LETS GOOO 🔥 ok but why'd you pick gold over the btc short?" },
-  { role: 'ai', text: "couple reasons. btc was a coin-flip — pure chop with trap-y funding, no real edge. gold actually had one: a clean RSI reset, macro tailwind from ETF inflows + a dovish fed, and a tight invalidation i could define. higher conviction, smaller risk. i only fire when Source, Inference and Adherence all prove out — btc never gave me that." },
+  { role: 'ai', text: "couple reasons. btc was a coin-flip: pure chop with trap-y funding, no real edge. gold actually had one: a clean RSI reset, macro tailwind from ETF inflows + a dovish fed, and a tight invalidation i could define. higher conviction, smaller risk. i only fire when Source, Inference and Adherence all prove out. btc never gave me that." },
   { role: 'user', text: "makes sense. didn't we take a small L earlier too?" },
-  { role: 'ai', text: "yeah, the eth scalp tapped its stop — small by design though, that's the 2% cap doing its job:", card: 'loss' },
+  { role: 'ai', text: "yeah, the eth scalp tapped its stop. small by design though, that's the 2% cap doing its job:", card: 'loss' },
   { role: 'ai', text: "net we're still comfortably green for the week 📈 want me to scan for the next setup, or call it here?" },
 ];
 
@@ -541,7 +541,7 @@ function ChatView() {
     setTyping(true);
     setTimeout(() => {
       setTyping(false);
-      setMsgs(m => [...m, { role: 'ai', text: "good call — let me pull that from the Sentinel and break it down for you 👇" }]);
+      setMsgs(m => [...m, { role: 'ai', text: "good call. let me pull that from the Sentinel and break it down for you 👇" }]);
     }, 1150);
   }
 
@@ -826,7 +826,7 @@ function Hero() {
     <header className="hero">
       <div className="arc-wrap" aria-hidden="true"><div className="arc-blob" /><div className="arc-glow" /></div>
       <div className="hero-inner">
-        <Badge>⚡ Early Access Now Open — Limited Spots</Badge>
+        <Badge>⚡ Early Access Now Open · Limited Spots</Badge>
         <h1>Trade without trust.<br /><span className="mint">Proven by math.</span></h1>
         <p className="sub">Syfx is the world's first verifiable AI operating system for traders. It mathematically proves every decision before a single dollar moves.</p>
         <div className="hero-cta">
@@ -854,7 +854,7 @@ function Strip() {
 
 /* ===== PROBLEM (PRD 6.3) ===== */
 const PROBLEMS = [
-  ['01', 'No explanation. No accountability.', 'Existing bots execute trades without ever telling you why. You trust an algorithm you did not write and cannot audit — and when it fails, the only answer you get is silence.'],
+  ['01', 'No explanation. No accountability.', 'Existing bots execute trades without ever telling you why. You trust an algorithm you did not write and cannot audit. And when it fails, the only answer you get is silence.'],
   ['02', 'Your money sits on their servers.', 'Most platforms hold your funds in centralized wallets they control. When they get hacked, go insolvent, or freeze withdrawals, your capital disappears with them.'],
   ['03', 'Parameters. Not intelligence.', 'Traditional bots force confusing technical settings, then never adapt. They do not learn, and they do not understand the nuance of your risk tolerance or psychology.'],
 ];
@@ -869,7 +869,7 @@ function ProblemSection() {
       <div className="prob-grid">
         {PROBLEMS.map(([n, t, b]) => (
           <div className="prob-card" key={n}>
-            <div className="prob-num">{n} —</div>
+            <div className="prob-num">{n}.</div>
             <h4>{t}</h4>
             <p>{b}</p>
           </div>
@@ -986,14 +986,14 @@ const HOW_SCRIPT = [
   { role: 'user', text: "yo what's gold looking like this week? been eyeing a long but the volatility's got me nervous 😅" },
   { role: 'ai', chip: 'scanned 6 live sources', text: "pulled the live read first. RSI tapped 33 at the london open, ETF flows are net-positive and the fed's sounding dovish. there's a clean setup here." },
   { role: 'user', text: "ok i'm in. keep it small tho, i don't trust this tape" },
-  { role: 'ai', text: "smart. tight one — small size, 2% stop, +5.5% target. here's the play 👇", setup: true },
+  { role: 'ai', text: "smart. tight one: small size, 2% stop, +5.5% target. here's the play 👇", setup: true },
   { role: 'user', text: "why long and not just sit it out?" },
-  { role: 'ai', text: "your rules only fire on a deep RSI reset and it printed 33 — macro's a tailwind, not a headwind. higher conviction, capped risk. if it slips i'm out at −2%, no emotion." },
+  { role: 'ai', text: "your rules only fire on a deep RSI reset and it printed 33. macro's a tailwind, not a headwind. higher conviction, capped risk. if it slips i'm out at −2%, no emotion." },
   { role: 'user', text: "perfect. send it 🚀" },
-  { role: 'ai', text: "done — filled at 2,401.0 🎯 i'll babysit it and ping you the second anything changes." },
+  { role: 'ai', text: "done: filled at 2,401.0 🎯 i'll babysit it and ping you the second anything changes." },
 ];
 const HOW_THREADS = [
-  ['Gold setup — this week', true],
+  ['Gold setup: this week', true],
   ['ETH momentum scan', false],
   ['Hedge my portfolio', false],
   ['BTC chop watch', false],
@@ -1139,14 +1139,14 @@ function HowItWorks() {
       <div className="sec-head">
         <span className="sec-label">HOW IT WORKS</span>
         <h2 className="sec-h2">From conversation to<br /><span className="mint">cryptographically verified execution.</span></h2>
-        <p className="sec-sub">Watch a real Syfx session: you talk, the Sentinel scans, your rulebook compiles, three proofs run — and only then does the vault move.</p>
+        <p className="sec-sub">Watch a real Syfx session: you talk, the Sentinel scans, your rulebook compiles, three proofs run, and only then does the vault move.</p>
       </div>
       <HowChat />
       <div className="adv2">
         <div className="adv2-left">
           <div className="adv-row"><span className="live-dot" /><span className="adv-lbl">ADVISORY MODE</span></div>
-          <h3>You stay in control — always.</h3>
-          <p>Before any trade fires, Syfx pings your Telegram with the full setup and its three passing proofs. Interrogate the AI right there — ask <b>WHY</b> and get the complete breakdown.</p>
+          <h3>You stay in control. Always.</h3>
+          <p>Before any trade fires, Syfx pings your Telegram with the full setup and its three passing proofs. Interrogate the AI right there. Ask <b>WHY</b> and get the complete breakdown.</p>
           <p>Only after your green light does the vault unlock and execute. No surprise trades. No black box. Just a conversation that ends in math.</p>
         </div>
         <div className="phone-col">
@@ -1160,7 +1160,7 @@ function HowItWorks() {
 /* ===== FEATURES (PRD 6.6) — six cards ===== */
 const FEATURES = [
   [IBrain, 'Syfx AI 1.0', 'Conversational intelligence that explains its thesis, cites its sources, and learns your trading psychology permanently through Infinite Memory.'],
-  [ISentinel, 'The Sentinel', 'A relentless global data engine scanning social media, macro news, central-bank speeches and on-chain liquidity pools simultaneously — 24/7.'],
+  [ISentinel, 'The Sentinel', 'A relentless global data engine scanning social media, macro news, central-bank speeches and on-chain liquidity pools simultaneously, 24/7.'],
   [IProof, 'Triple-Layer ZK Proof', 'Three independent cryptographic proofs verify every trade before execution. Math, not trust.'],
   [ILock, 'Non-Custodial Vault', 'Your funds never leave your personal smart contract. Syfx cannot hold, move, or access your capital without a verified execution proof.'],
   [IBolt, 'Sentinel Agents', 'Autonomous background agents deployed per strategy, hunting your exact setups across crypto and forex markets around the clock.'],
@@ -1255,7 +1255,7 @@ const MODES = [
   {
     key: 'advisory', tab: 'Advisory · Co-pilot', icon: IBrain,
     accent: '#F5A524', tint: 'rgba(245,165,36,0.12)', border: 'rgba(245,165,36,0.35)', glow: 'rgba(245,165,36,0.10)',
-    title: 'Advisory Mode — The Elite Co-pilot',
+    title: 'Advisory Mode: The Elite Co-pilot',
     body: 'The AI acts as your senior research analyst. It scans the globe 24/7, finds a high-confidence setup, builds a reasoning summary, and pings you. It explains the "why" and waits for your Approve or Reject. You are the pilot; the AI is the radar.',
     chips: ['One-tap approve / reject', 'Reasoning summary', 'Telegram pings'],
     flow: [
@@ -1267,8 +1267,8 @@ const MODES = [
   {
     key: 'auto', tab: 'Autonomous · Full auto', icon: IBolt,
     accent: '#00E5A0', tint: 'rgba(0,229,160,0.12)', border: 'rgba(0,229,160,0.30)', glow: 'rgba(0,229,160,0.10)',
-    title: 'Autonomous Mode — The Full-Auto Engine',
-    body: 'You set the rulebook once; the AI runs it end-to-end. It hunts setups, runs the triple ZK proof, and executes the moment every proof passes — no ping, no wait. You stay in control through your rules and a live, verifiable receipt trail.',
+    title: 'Autonomous Mode: The Full-Auto Engine',
+    body: 'You set the rulebook once; the AI runs it end-to-end. It hunts setups, runs the triple ZK proof, and executes the moment every proof passes. No ping, no wait. You stay in control through your rules and a live, verifiable receipt trail.',
     chips: ['Hands-free execution', 'Rulebook-bound', 'ZK receipt per trade'],
     flow: [
       ['Sentinel finds a setup', 'Matched against your rulebook'],
@@ -1326,7 +1326,7 @@ function AutonomySpectrum() {
       <div className="sec-head">
         <span className="sec-label">THE AUTONOMY SPECTRUM</span>
         <h2 className="sec-h2">You're never forced to choose<br />between <span className="mint">ease and control.</span></h2>
-        <p className="sec-sub">Meet <b style={{ color: 'var(--text-primary)' }}>Execution Mode</b> — one master toggle in your dashboard. Run Syfx as a co-pilot that asks before it acts, or a full-auto engine that executes on its own. Flip it whenever you like; the proofs run either way.</p>
+        <p className="sec-sub">Meet <b style={{ color: 'var(--text-primary)' }}>Execution Mode</b>: one master toggle in your dashboard. Run Syfx as a co-pilot that asks before it acts, or a full-auto engine that executes on its own. Flip it whenever you like; the proofs run either way.</p>
       </div>
       <div className="auto-toggle" role="tablist" style={{ '--am': m.accent }}>
         {MODES.map((mm, i) => (
@@ -1408,10 +1408,10 @@ function MarketsSection() {
 
 /* ===== CREDIBILITY — "don't trust, verify": technology trust signals ===== */
 const CREDS = [
-  [IGithub, 'Open-source & auditable', 'Every smart contract and ZK circuit is public. Read the code, replay the proofs, and confirm the math yourself — no blind trust required.'],
-  [IGlobe, 'Anchored on 0G Network', 'Every trade leaves a permanent ZK receipt on 0G Network, so the record of what the AI did — and why — can never be edited or erased.'],
+  [IGithub, 'Open-source & auditable', 'Every smart contract and ZK circuit is public. Read the code, replay the proofs, and confirm the math yourself. No blind trust required.'],
+  [IGlobe, 'Anchored on 0G Network', 'Every trade leaves a permanent ZK receipt on 0G Network, so the record of what the AI did (and why) can never be edited or erased.'],
   [IProof, 'Built on RISC Zero zkVM', 'Proofs run on RISC Zero, the industry-leading zero-knowledge virtual machine trusted by serious ZK infrastructure worldwide.'],
-  [ILock, 'Non-custodial by architecture', 'Your capital lives in your own smart-contract vault. Syfx can never hold, move, or freeze your funds — it is mathematically prevented from doing so.'],
+  [ILock, 'Non-custodial by architecture', 'Your capital lives in your own smart-contract vault. Syfx can never hold, move, or freeze your funds. It is mathematically prevented from doing so.'],
 ];
 function CredibilitySection() {
   return (
@@ -1430,7 +1430,7 @@ function CredibilitySection() {
         ))}
       </div>
       <div className="cred-statement">
-        <p>Every trade comes with mathematical proof that the data was real, the AI reasoned correctly, and your rules were followed — <span className="mint">checkable by anyone, owned by you.</span></p>
+        <p>Every trade comes with mathematical proof that the data was real, the AI reasoned correctly, and your rules were followed. <span className="mint">Checkable by anyone, owned by you.</span></p>
       </div>
     </section>
   );
@@ -1449,7 +1449,7 @@ function CommunitiesSection() {
       <div className="sec-head">
         <span className="sec-label">OUR COMMUNITIES</span>
         <h2 className="sec-h2">Build with us.</h2>
-        <p className="sec-sub">Syfx is built in the open. Follow the journey, ask questions, and shape what comes next — pick your corner of the community below.</p>
+        <p className="sec-sub">Syfx is built in the open. Follow the journey, ask questions, and shape what comes next. Pick your corner of the community below.</p>
       </div>
       <div className="comm-row">
         {COMMS.map(([name, icon]) => (
@@ -1465,11 +1465,11 @@ function CommunitiesSection() {
 
 /* ===== FAQ ===== */
 const FAQS = [
-  ['What is Syfx?', "Syfx is a verifiable AI operating system for traders. You build strategy in plain conversation, and every trade is backed by a triple-layer zero-knowledge proof before a single dollar moves — so you can verify the AI's work instead of trusting it blindly."],
-  ['Is Syfx custodial? Can it touch my funds?', 'No. Syfx is 100% non-custodial by architecture. Your capital lives in your own smart-contract vault — Syfx can never hold, move, or freeze your funds without a verified execution proof.'],
-  ['What do early-access members get?', 'Founding members get a permanent badge on their profile, Elite tier free for 30 days, and a direct line to the team. Early access is limited — joining the waitlist locks in your spot.'],
+  ['What is Syfx?', "Syfx is a verifiable AI operating system for traders. You build strategy in plain conversation, and every trade is backed by a triple-layer zero-knowledge proof before a single dollar moves, so you can verify the AI's work instead of trusting it blindly."],
+  ['Is Syfx custodial? Can it touch my funds?', 'No. Syfx is 100% non-custodial by architecture. Your capital lives in your own smart-contract vault. Syfx can never hold, move, or freeze your funds without a verified execution proof.'],
+  ['What do early-access members get?', 'Founding members get a permanent badge on their profile, Elite tier free for 30 days, and a direct line to the team. Early access is limited. Joining the waitlist locks in your spot.'],
   ['Which markets and chains are supported?', 'Crypto spot and perps across Ethereum, Base, Arbitrum, Hyperliquid and Solana, plus forex and RWAs via Ostium and OANDA. Proofs are anchored on the 0G Network, with more markets added continuously.'],
-  ['How do the ZK proofs actually work?', 'Before execution, Syfx runs three independent cryptographic proofs — that the market data was real, the AI reasoned correctly, and your exact rules were followed. If any one fails, the vault physically refuses to execute. Enforced by code, not policy.'],
+  ['How do the ZK proofs actually work?', 'Before execution, Syfx runs three independent cryptographic proofs: that the market data was real, the AI reasoned correctly, and your exact rules were followed. If any one fails, the vault physically refuses to execute. Enforced by code, not policy.'],
 ];
 function FAQSection() {
   const [open, setOpen] = useState(0);
@@ -1537,13 +1537,13 @@ function WaitlistCTA() {
         {!done ? (
           <React.Fragment>
             <div className="wl-left">
-              <span className="wl-eyebrow"><span className="live-dot" />EARLY ACCESS — LIMITED SPOTS</span>
+              <span className="wl-eyebrow"><span className="live-dot" />EARLY ACCESS · LIMITED SPOTS</span>
               <h2>Be first when<br /><span className="mint">Syfx goes live.</span></h2>
               <p className="wl-lead">Join the early-access list for the verifiable AI trading OS.</p>
-              <p className="wl-note">Product updates, Syfx Points announcements, and rollout news — straight to your inbox. Founding members get Elite tier free for 30 days and a permanent profile badge.</p>
+              <p className="wl-note">Product updates, Syfx Points announcements, and rollout news, straight to your inbox. Founding members get Elite tier free for 30 days and a permanent profile badge.</p>
               <div className="wl-pills">
                 <span className="wl-pill"><ICheck size={13} />Founding Member</span>
-                <span className="wl-pill"><ICheck size={13} />Elite — free 30 days</span>
+                <span className="wl-pill"><ICheck size={13} />Elite: free 30 days</span>
                 <span className="wl-pill"><ICheck size={13} />Direct team line</span>
               </div>
             </div>
@@ -1585,7 +1585,7 @@ function Footer() {
       <div className="foot-top">
         <div className="foot-brand">
           <div className="row"><img src={MARK} alt="" /><b>Syfx</b></div>
-          <p>The verifiable AI operating system for traders. Trade without trust — proven by math.</p>
+          <p>The verifiable AI operating system for traders. Trade without trust. Proven by math.</p>
           <div className="foot-social">
             <a href="#" aria-label="X"><IX size={16} /></a>
             <a href="#" aria-label="Telegram"><ISend size={16} /></a>
@@ -1628,7 +1628,7 @@ function HowItWorksPage() {
       <header className="hiw-hero">
         <Badge>⚡ Live Product Demo</Badge>
         <h1 className="hiw-h1">See Syfx <span className="mint">in action.</span></h1>
-        <p className="hiw-sub">A full walkthrough of the real workspace — trade execution, the Syfx AI conversation, ZK proofs, and markets, all in one interactive dashboard.</p>
+        <p className="hiw-sub">A full walkthrough of the real workspace: trade execution, the Syfx AI conversation, ZK proofs, and markets, all in one interactive dashboard.</p>
       </header>
       <Dashboard />
       <section className="sec" id="conversation">
