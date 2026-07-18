@@ -6,6 +6,34 @@ const MINT = '#00E5A0';
 const DOWN = '#FF5C6C';
 const MARK = 'assets/syfx-mark.png';
 
+/* ---------- live-ticker hook: drives the "automated live dashboard" number/chart motion ---------- */
+function prefersReducedMotion() {
+  try { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
+}
+function useTicker(initial, { step, stepPct, intervalMs = 2200, min = -Infinity, max = Infinity } = {}) {
+  const [value, setValue] = useState(initial);
+  const [dir, setDir] = useState(0);
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    let id;
+    function schedule() {
+      id = setTimeout(() => {
+        setValue(v => {
+          const magnitude = step != null ? step : stepPct * Math.max(Math.abs(v), 1);
+          const delta = (Math.random() - 0.48) * magnitude;
+          const next = Math.min(max, Math.max(min, v + delta));
+          setDir(delta >= 0 ? 1 : -1);
+          return next;
+        });
+        schedule();
+      }, intervalMs + Math.random() * 700);
+    }
+    schedule();
+    return () => clearTimeout(id);
+  }, []);
+  return [value, dir];
+}
+
 /* ---------- Lucide-style line icons ---------- */
 function Icon({ d, size = 20, stroke = 2, children, style }) {
   return (
@@ -71,9 +99,11 @@ function genCandles(n, base) {
   }
   return out;
 }
-function TradeChart({ base }) {
+function TradeChart({ base, onLastPrice }) {
   const wrapRef = useRef(null);
   const canvasRef = useRef(null);
+  const dataRef = useRef(null);
+  if (!dataRef.current) dataRef.current = genCandles(70, base);
   useEffect(() => {
     const wrap = wrapRef.current, canvas = canvasRef.current;
     if (!wrap || !canvas) return;
@@ -89,7 +119,7 @@ function TradeChart({ base }) {
       const padR = 58, padB = 22, padT = 8;
       const plotW = w - padR, plotH = h - padB - padT;
       const count = Math.max(24, Math.min(70, Math.floor(plotW / 9)));
-      const candles = genCandles(count, base);
+      const candles = dataRef.current.slice(-count);
       let min = Infinity, max = -Infinity;
       candles.forEach(c => { if (c.lo < min) min = c.lo; if (c.hi > max) max = c.hi; });
       const pad = (max - min) * 0.08; min -= pad; max += pad;
@@ -138,7 +168,30 @@ function TradeChart({ base }) {
     draw();
     const ro = new ResizeObserver(draw);
     ro.observe(wrap);
-    return () => ro.disconnect();
+
+    if (prefersReducedMotion()) return () => ro.disconnect();
+    let tickCount = 0;
+    function tick() {
+      const data = dataRef.current;
+      const lastIdx = data.length - 1;
+      const cur = data[lastIdx];
+      const vol = base * 0.0022;
+      const step = (Math.random() - 0.48) * vol;
+      const nextClose = cur.close + step;
+      data[lastIdx] = {
+        open: cur.open, close: nextClose,
+        hi: Math.max(cur.hi, nextClose), lo: Math.min(cur.lo, nextClose),
+      };
+      tickCount++;
+      if (tickCount % 5 === 0) {
+        data.push({ open: nextClose, close: nextClose, hi: nextClose, lo: nextClose });
+        if (data.length > 90) data.shift();
+      }
+      draw();
+      if (onLastPrice) onLastPrice(nextClose, step >= 0 ? 1 : -1);
+    }
+    const id = setInterval(tick, 1300 + Math.random() * 500);
+    return () => { ro.disconnect(); clearInterval(id); };
   }, [base]);
   return <div ref={wrapRef} className="chart-canvas-wrap"><canvas ref={canvasRef} /></div>;
 }
@@ -231,22 +284,41 @@ function Overview() {
 }
 
 /* ===================== TRADE ===================== */
-const MKT_STATS = [
-  ['24h change', '+1.84%', MINT],
-  ['Open interest', '$78.2M', null],
-  ['Net rate (L/S)', '0.0059%', MINT],
-  ['24h volume', '$8.00M', null],
-];
 const POSITIONS = [
-  ['XAU/USD', 'Long', '8.42', '200', '2,401.6', '2,418.5', '+$56.81', true],
-  ['ETH/USDC', 'Long', '0.018', '500', '2,612.0', '2,668.1', '+$29.34', true],
-  ['US500', 'Short', '2.14', '300', '7,340.0', '7,308.2', '+$30.59', true],
-  ['NVDA/USD', 'Short', '3.60', '150', '912.5', '921.4', '-$32.04', true],
+  ['XAU/USD', 'Long', '8.42', '200', '2,401.6', '2,418.5', 56.81],
+  ['ETH/USDC', 'Long', '0.018', '500', '2,612.0', '2,668.1', 29.34],
+  ['US500', 'Short', '2.14', '300', '7,340.0', '7,308.2', 30.59],
+  ['NVDA/USD', 'Short', '3.60', '150', '912.5', '921.4', -32.04],
 ];
+function PositionRow({ row }) {
+  const [m, s, sz, col, ent, mark] = row;
+  const [pnl] = useTicker(row[6], { step: Math.max(0.6, Math.abs(row[6]) * 0.05), intervalMs: 2400 });
+  const up = pnl >= 0;
+  return (
+    <tr>
+      <td><span className="pm">{m}</span> <span className={'pside ' + (s === 'Long' ? 'l' : 's')}>{s}</span></td>
+      <td style={mono}>{sz}</td>
+      <td style={mono}>{col} <span className="u">USDC</span></td>
+      <td style={mono}>{ent}</td>
+      <td style={mono}>{mark}</td>
+      <td style={{ ...mono, color: up ? MINT : DOWN, fontWeight: 700, transition: 'color .4s' }}>{(up ? '+$' : '-$') + Math.abs(pnl).toFixed(2)}</td>
+      <td><span className="verified"><ICheck size={12} /><span className="txt">Verified</span></span></td>
+    </tr>
+  );
+}
 function TradeView() {
   const [side, setSide] = useState('long');
   const [otab, setOtab] = useState('market');
   const [lev, setLev] = useState(10);
+  const [livePrice, setLivePrice] = useState(7308.25);
+  const [liveDir, setLiveDir] = useState(0);
+  const [changePct] = useTicker(1.84, { step: 0.04, intervalMs: 2600, min: -6, max: 6 });
+  const stats = [
+    ['24h change', (changePct >= 0 ? '+' : '') + changePct.toFixed(2) + '%', changePct >= 0 ? MINT : DOWN],
+    ['Open interest', '$78.2M', null],
+    ['Net rate (L/S)', '0.0059%', MINT],
+    ['24h volume', '$8.00M', null],
+  ];
   return (
     <React.Fragment>
       {/* market header */}
@@ -261,12 +333,14 @@ function TradeView() {
           </div>
         </button>
         <div className="mkt-price">
-          <div style={{ ...mono, fontSize: 22, fontWeight: 700, color: '#fff' }}>7,308.25</div>
+          <div style={{ ...mono, fontSize: 22, fontWeight: 700, color: liveDir === -1 ? DOWN : liveDir === 1 ? MINT : '#fff', transition: 'color .4s' }}>
+            {livePrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </div>
           <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Mark price</div>
         </div>
         <div className="mkt-stats">
-          {MKT_STATS.map(([l, v, c]) => (
-            <div key={l}><div className="ms-l">{l}</div><div className="ms-v" style={c ? { color: c } : null}>{v}</div></div>
+          {stats.map(([l, v, c]) => (
+            <div key={l}><div className="ms-l">{l}</div><div className="ms-v" style={{ ...(c ? { color: c } : null), transition: 'color .4s' }}>{v}</div></div>
           ))}
         </div>
         <span className="mkt-zk"><IProof size={13} />ZK-Verified market</span>
@@ -285,7 +359,7 @@ function TradeView() {
               <ICandle size={15} /><ISettings size={15} /><IMax size={15} />
             </div>
           </div>
-          <TradeChart base={7308} />
+          <TradeChart base={7308} onLastPrice={(p, d) => { setLivePrice(p); setLiveDir(d); }} />
         </div>
         {/* order ticket */}
         <div className="order">
@@ -338,20 +412,7 @@ function TradeView() {
               <th>Market &amp; Side</th><th>Size</th><th>Collateral</th><th>Entry</th><th>Mark</th><th>PnL</th><th>Proof</th>
             </tr></thead>
             <tbody>
-              {POSITIONS.map(([m, s, sz, col, ent, mark, pnl, ok]) => {
-                const up = pnl[0] === '+';
-                return (
-                  <tr key={m}>
-                    <td><span className="pm">{m}</span> <span className={'pside ' + (s === 'Long' ? 'l' : 's')}>{s}</span></td>
-                    <td style={mono}>{sz}</td>
-                    <td style={mono}>{col} <span className="u">USDC</span></td>
-                    <td style={mono}>{ent}</td>
-                    <td style={mono}>{mark}</td>
-                    <td style={{ ...mono, color: up ? MINT : DOWN, fontWeight: 700 }}>{pnl}</td>
-                    <td><span className="verified"><ICheck size={12} /><span className="txt">Verified</span></span></td>
-                  </tr>
-                );
-              })}
+              {POSITIONS.map((row) => <PositionRow row={row} key={row[0]} />)}
             </tbody>
           </table>
         </div>
