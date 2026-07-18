@@ -719,7 +719,7 @@ function Dashboard() {
   const stageRef = useRef(null);
   const fitRef = useRef(null);
   const dashRef = useRef(null);
-  const DESIGN_W = 1200;
+  const DESIGN_W = 1080;
 
   useEffect(() => {
     const stage = stageRef.current, fit = fitRef.current, dash = dashRef.current;
@@ -728,7 +728,7 @@ function Dashboard() {
 
     // WIDTH → scale (stable: known immediately from the container, set once per real width change)
     function applyScale() {
-      const avail = stage.clientWidth - 32;
+      const avail = stage.clientWidth - 48;
       if (avail <= 0 || Math.abs(avail - lastW) < 4) return;
       lastW = avail;
       scale = Math.min(1, avail / DESIGN_W);
@@ -826,7 +826,7 @@ function Hero() {
     <header className="hero">
       <div className="arc-wrap" aria-hidden="true"><div className="arc-blob" /><div className="arc-glow" /></div>
       <div className="hero-inner">
-        <Badge>⚡ Early Access Now Open · Limited Spots</Badge>
+        <Badge><IBolt size={13} />Early Access Now Open · Limited Spots</Badge>
         <h1>Trade without trust.<br /><span className="mint">Proven by math.</span></h1>
         <p className="sub">Syfx is the world's first verifiable AI operating system for traders. It mathematically proves every decision before a single dollar moves.</p>
         <div className="hero-cta">
@@ -834,9 +834,9 @@ function Hero() {
           <Button variant="ghost" size="lg" iconRight={<IArrow size={18} />} onClick={() => { location.href = 'how-it-works.html'; }}>See how it works</Button>
         </div>
         <div className="hero-trust">
-          <span>🔒 Non-custodial</span><span className="sep">·</span>
-          <span>✓ ZK-Verified</span><span className="sep">·</span>
-          <span>⚡ Built on 0G Network</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><ILock size={13} />Non-custodial</span><span className="sep">·</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><ICheck size={13} />ZK-Verified</span><span className="sep">·</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><IBolt size={13} />Built on 0G Network</span>
         </div>
       </div>
     </header>
@@ -1368,14 +1368,16 @@ function AutonomySpectrum() {
 }
 
 /* ===== MARKETS (PRD 6.7) ===== */
-const MK_CRYPTO = [['ETH', 'Ethereum'], ['BASE', 'Base'], ['ARB', 'Arbitrum'], ['SOL', 'Solana'], ['HL', 'Hyperliquid'], ['TRX', 'Tron'], ['SUI', 'Sui'], ['BNB', 'BNB Chain'], ['OP', 'Optimism'], ['AVAX', 'Avalanche'], ['APT', 'Aptos'], ['BLST', 'Blast']];
-const MK_FOREX = [['XAU', 'Gold'], ['XAG', 'Silver'], ['OIL', 'Crude Oil'], ['EUR', 'EUR/USD'], ['GBP', 'GBP/USD'], ['JPY', 'USD/JPY'], ['SPX', 'S&P 500'], ['NDX', 'Nasdaq 100'], ['OST', 'Ostium'], ['OAN', 'OANDA (V2)']];
-const MK_INFRA = [['0G', '0G Network'], ['R0', 'RISC Zero'], ['PV', 'Privy']];
+const MK_CRYPTO = [['ETH', 'Ethereum', 'eth.png'], ['BASE', 'Base', 'base.png'], ['ARB', 'Arbitrum', 'arb.png'], ['SOL', 'Solana', 'sol.png'], ['HL', 'Hyperliquid', 'hl.png'], ['TRX', 'Tron', 'trx.png'], ['SUI', 'Sui', 'sui.png'], ['BNB', 'BNB Chain', 'bnb.png'], ['OP', 'Optimism', 'op.png'], ['AVAX', 'Avalanche', 'avax.png'], ['APT', 'Aptos', 'apt.png'], ['BLST', 'Blast', 'blst.png']];
+const MK_FOREX = [['XAU', 'Gold'], ['XAG', 'Silver'], ['OIL', 'Crude Oil'], ['EUR', 'EUR/USD'], ['GBP', 'GBP/USD'], ['JPY', 'USD/JPY'], ['SPX', 'S&P 500', 'spx.png'], ['NDX', 'Nasdaq 100', 'nasdaq.png'], ['OST', 'Ostium', 'ostium.png'], ['OAN', 'OANDA (V2)', 'oanda.png']];
+const MK_INFRA = [['0G', '0G Network', 'og_network.png'], ['R0', 'RISC Zero', 'risc_zero.png'], ['PV', 'Privy', 'privy.png']];
 function MarqueeRow({ label, items, infra, rev, dur }) {
   const row = (hidden) => (
     <div className="mk-track" aria-hidden={hidden ? 'true' : undefined}>
-      {items.map(([t, n]) => (
-        <span className={'chain-tok' + (infra ? ' infra' : '')} key={n + (hidden ? '-b' : '')}><span className="cdot">{t}</span>{n}</span>
+      {items.map(([t, n, logo]) => (
+        <span className={'chain-tok' + (infra ? ' infra' : '')} key={n + (hidden ? '-b' : '')}>
+          <span className={'cdot' + (logo ? ' has-logo' : '')}>{logo ? <img src={'assets/logos/' + logo} alt="" /> : t}</span>{n}
+        </span>
       ))}
     </div>
   );
@@ -1626,7 +1628,7 @@ function HowItWorksPage() {
     <React.Fragment>
       <Nav backToSite />
       <header className="hiw-hero">
-        <Badge>⚡ Live Product Demo</Badge>
+        <Badge><IBolt size={13} />Live Product Demo</Badge>
         <h1 className="hiw-h1">See Syfx <span className="mint">in action.</span></h1>
         <p className="hiw-sub">A full walkthrough of the real workspace: trade execution, the Syfx AI conversation, ZK proofs, and markets, all in one interactive dashboard.</p>
       </header>
