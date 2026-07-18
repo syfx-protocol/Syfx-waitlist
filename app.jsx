@@ -719,7 +719,7 @@ function Dashboard() {
   const stageRef = useRef(null);
   const fitRef = useRef(null);
   const dashRef = useRef(null);
-  const DESIGN_W = 1080;
+  const DESIGN_W = 1140;
 
   useEffect(() => {
     const stage = stageRef.current, fit = fitRef.current, dash = dashRef.current;
