@@ -290,6 +290,37 @@ const POSITIONS = [
   ['US500', 'Short', '2.14', '300', '7,340.0', '7,308.2', 30.59],
   ['NVDA/USD', 'Short', '3.60', '150', '912.5', '921.4', -32.04],
 ];
+/* live 3-step ZK verification cycle — Syfx's signature "alive proof" moment */
+const ZK_STEPS = ['Source', 'Inference', 'Adherence'];
+function ZkLiveGate() {
+  const [step, setStep] = useState(0); // 0..2 verifying that index, 3 = all passed (hold)
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    const id = setInterval(() => setStep(s => (s + 1) % 5), 950);
+    return () => clearInterval(id);
+  }, []);
+  const allPassed = step === 3 || step === 4;
+  return (
+    <div className="zk-live">
+      <div className="zk-live-row">
+        {ZK_STEPS.map((label, i) => {
+          const done = allPassed || i < step;
+          const active = !allPassed && i === step;
+          return (
+            <span className={'zk-dot' + (done ? ' done' : '') + (active ? ' active' : '')} key={label}>
+              {done ? <ICheck size={11} /> : <span className="zk-dot-i" />}
+              {label}
+            </span>
+          );
+        })}
+      </div>
+      <span className="zk-live-msg">
+        <IProof size={15} />
+        {allPassed ? 'All 3 proofs passed — ready to execute.' : 'Verifying ' + ZK_STEPS[step] + '…'}
+      </span>
+    </div>
+  );
+}
 function PositionRow({ row }) {
   const [m, s, sz, col, ent, mark] = row;
   const [pnl] = useTicker(row[6], { step: Math.max(0.6, Math.abs(row[6]) * 0.05), intervalMs: 2400 });
@@ -306,6 +337,38 @@ function PositionRow({ row }) {
     </tr>
   );
 }
+
+/* live fills ticker — a thin, continuously-updating strip of just-verified trades */
+const FILL_FEED = [
+  ['XAU/USD', 'Long', 12.40], ['ETH/USDC', 'Long', 4.12], ['US500', 'Short', -6.30],
+  ['NVDA/USD', 'Short', 9.85], ['SOL/USDC', 'Long', 2.77], ['BTC/USDC', 'Long', 18.02],
+  ['GBP/USD', 'Short', -3.15], ['ARB/USDC', 'Long', 1.94],
+];
+function LiveFillsTicker() {
+  const [i, setI] = useState(0);
+  const [visible, setVisible] = useState(true);
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    const id = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => { setI(v => (v + 1) % FILL_FEED.length); setVisible(true); }, 260);
+    }, 2600);
+    return () => clearInterval(id);
+  }, []);
+  const [pair, side, pnl] = FILL_FEED[i];
+  const up = pnl >= 0;
+  return (
+    <div className="fills-ticker">
+      <span className="live-dot" />
+      <span className={'fills-row' + (visible ? ' in' : '')}>
+        <ICheck size={12} style={{ color: MINT }} />
+        <b>{pair}</b><span className="fills-side">{side}</span>
+        <span style={{ color: up ? MINT : DOWN, ...mono }}>{(up ? '+$' : '-$') + Math.abs(pnl).toFixed(2)}</span>
+        <span className="fills-verified">ZK-verified</span>
+      </span>
+    </div>
+  );
+}
 function TradeView() {
   const [side, setSide] = useState('long');
   const [otab, setOtab] = useState('market');
@@ -315,7 +378,7 @@ function TradeView() {
   const [changePct] = useTicker(1.84, { step: 0.04, intervalMs: 2600, min: -6, max: 6 });
   const stats = [
     ['24h change', (changePct >= 0 ? '+' : '') + changePct.toFixed(2) + '%', changePct >= 0 ? MINT : DOWN],
-    ['Open interest', '$78.2M', null],
+    ['Open interest (L/S)', '$46.1M / $32.1M', null],
     ['Net rate (L/S)', '0.0059%', MINT],
     ['24h volume', '$8.00M', null],
   ];
@@ -359,6 +422,7 @@ function TradeView() {
               <ICandle size={15} /><ISettings size={15} /><IMax size={15} />
             </div>
           </div>
+          <LiveFillsTicker />
           <TradeChart base={7308} onLastPrice={(p, d) => { setLivePrice(p); setLiveDir(d); }} />
         </div>
         {/* order ticket */}
@@ -386,10 +450,7 @@ function TradeView() {
             <input type="range" min="1" max="50" value={lev} onChange={e => setLev(+e.target.value)}
               style={{ width: '100%', accentColor: MINT }} />
           </div>
-          <div className="zk-note">
-            <IProof size={15} />
-            <span>Triple-Layer ZK Proof runs before this trade can execute.</span>
-          </div>
+          <ZkLiveGate />
           <button className={'order-btn' + (side === 'short' ? ' short' : '')}>
             Review &amp; Prove {side === 'long' ? 'Long' : 'Short'} <IArrow size={16} />
           </button>
@@ -780,7 +841,7 @@ function Dashboard() {
   const stageRef = useRef(null);
   const fitRef = useRef(null);
   const dashRef = useRef(null);
-  const DESIGN_W = 1140;
+  const DESIGN_W = 1180;
 
   useEffect(() => {
     const stage = stageRef.current, fit = fitRef.current, dash = dashRef.current;
