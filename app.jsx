@@ -217,18 +217,57 @@ function ViewHead({ title, sub, tools }) {
 const cardSty = { background: 'var(--k-card)', border: '1px solid var(--k-border)', borderRadius: 14 };
 const mono = { fontFamily: 'var(--font-mono)' };
 
-/* ===================== OVERVIEW ===================== */
-const STATS = [
-  [IWallet, 'Vault balance', '$48,920', '+3.2%'],
-  [IProof, 'ZK proofs verified', '1,284', '+18%'],
-  [ITrend, 'Win rate', '73.4%', '+2.7%'],
-];
+/* ===================== OVERVIEW / DASHBOARD ===================== */
+const STAT_ICONS = [IWallet, IProof, ITrend];
 const RECENT = [
   ['XAU', 'XAU/USD', 'Long · Gold', '+5.5%', '2m'],
   ['ETH', 'ETH/USDC', 'Long · Spot', '+2.1%', '18m'],
   ['500', 'US500', 'Short · Index', '+1.8%', '1h'],
 ];
+const RECENT_POOL = [
+  ['SOL', 'SOL/USDC', 'Long · Spot', '+3.4%', '0m'],
+  ['BTC', 'BTC/USD', 'Long · Spot', '+0.9%', '0m'],
+  ['NVDA', 'NVDA/USD', 'Short · Equity', '+2.6%', '0m'],
+  ['ARB', 'ARB/USDC', 'Long · Spot', '+1.2%', '0m'],
+  ['GBP', 'GBP/USD', 'Short · Forex', '+0.7%', '0m'],
+  ['WTI', 'WTI/USD', 'Long · Oil', '+4.1%', '0m'],
+];
 function Overview() {
+  const [vault, vaultDir] = useTicker(48920, { stepPct: 0.006, intervalMs: 3200 });
+  const [winRate] = useTicker(73.4, { step: 0.15, intervalMs: 3600, min: 68, max: 79 });
+  const [proofCount, setProofCount] = useState(1284);
+  const [feed, setFeed] = useState(RECENT);
+  const [freshTag, setFreshTag] = useState(null);
+
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    const id = setInterval(() => setProofCount(c => c + 1), 4600 + Math.random() * 2600);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    let alive = true;
+    function schedule() {
+      const id = setTimeout(() => {
+        if (!alive) return;
+        const pick = RECENT_POOL[Math.floor(Math.random() * RECENT_POOL.length)];
+        const key = pick[0] + '-' + Date.now();
+        setFeed(f => [pick, ...f].slice(0, 4));
+        setFreshTag(key);
+        schedule();
+      }, 5200 + Math.random() * 3200);
+      return id;
+    }
+    const id = schedule();
+    return () => { alive = false; clearTimeout(id); };
+  }, []);
+
+  const liveStats = [
+    [STAT_ICONS[0], 'Vault balance', '$' + Math.round(vault).toLocaleString(), '+3.2%', vaultDir],
+    [STAT_ICONS[1], 'ZK proofs verified', proofCount.toLocaleString(), '+18%', 1],
+    [STAT_ICONS[2], 'Win rate', winRate.toFixed(1) + '%', '+2.7%', 0],
+  ];
   return (
     <React.Fragment>
       <div className="greet-row">
@@ -244,11 +283,11 @@ function Overview() {
         </div>
       </div>
       <div className="stats">
-        {STATS.map(([I, label, val, delta]) => (
+        {liveStats.map(([I, label, val, delta, dir]) => (
           <div className="stat" key={label}>
             <div className="stat-ico"><I size={18} /></div>
             <div className="stat-label">{label}</div>
-            <div className="stat-val">{val}</div>
+            <div className="stat-val" style={{ color: dir === -1 ? DOWN : dir === 1 ? MINT : '#fff', transition: 'color .4s' }}>{val}</div>
             <div className="stat-delta">↑ {delta}<span>vs last 7 days</span></div>
           </div>
         ))}
@@ -259,17 +298,21 @@ function Overview() {
             <h4>Recent verified trades</h4>
             <a href="#">View all <IArrow size={13} /></a>
           </div>
-          {RECENT.map(([tag, name, side, pnl, time]) => (
-            <div className="trade" key={name}>
-              <div className="trade-pair">
-                <div className="trade-dot">{tag}</div>
-                <div><div className="trade-name">{name}</div><div className="trade-side">{side}</div></div>
+          {feed.map(([tag, name, side, pnl, time], i) => {
+            const key = tag + '-' + i + '-' + name;
+            const isFresh = i === 0 && freshTag && freshTag.startsWith(tag);
+            return (
+              <div className={'trade' + (isFresh ? ' fresh' : '')} key={key}>
+                <div className="trade-pair">
+                  <div className="trade-dot">{tag}</div>
+                  <div><div className="trade-name">{name}</div><div className="trade-side">{side}</div></div>
+                </div>
+                <span className="verified"><ICheck size={13} /><span className="txt">ZK-Verified</span></span>
+                <div className="trade-pnl">{pnl}</div>
+                <div className="trade-time">{time === '0m' ? 'now' : time}</div>
               </div>
-              <span className="verified"><ICheck size={13} /><span className="txt">ZK-Verified</span></span>
-              <div className="trade-pnl">{pnl}</div>
-              <div className="trade-time">{time}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         <div className="promo">
           <div>
@@ -396,7 +439,12 @@ function TradeView() {
           </div>
         </button>
         <div className="mkt-price">
-          <div style={{ ...mono, fontSize: 22, fontWeight: 700, color: liveDir === -1 ? DOWN : liveDir === 1 ? MINT : '#fff', transition: 'color .4s' }}>
+          <div style={{
+            ...mono, fontSize: 24, fontWeight: 800, letterSpacing: '-0.01em',
+            color: liveDir === -1 ? DOWN : liveDir === 1 ? MINT : '#fff',
+            textShadow: liveDir === -1 ? '0 0 18px rgba(255,92,108,0.45)' : liveDir === 1 ? '0 0 18px rgba(0,229,160,0.45)' : 'none',
+            transition: 'color .4s, text-shadow .4s',
+          }}>
             {livePrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Mark price</div>
@@ -737,29 +785,64 @@ const PROOFS = [
   ['0xc156…e6b', 'US500', 'Short', '1h', '0x5e90…a1'],
   ['0xd40e…f17', 'NVDA/USD', 'Short', '3h', '0x2dbe…77'],
 ];
+const PROOF_POOL = [
+  ['SOL/USDC', 'Long'], ['BTC/USD', 'Long'], ['ARB/USDC', 'Short'],
+  ['GBP/USD', 'Long'], ['WTI/USD', 'Short'], ['NVDA/USD', 'Long'],
+];
+function genHash() {
+  const c = '0123456789abcdef';
+  const part = n => Array.from({ length: n }, () => c[Math.floor(Math.random() * 16)]).join('');
+  return '0x' + part(3) + '…' + part(2);
+}
 function ProofsView() {
+  const [rows, setRows] = useState(
+    PROOFS.map(([id, mkt, side, time, tx]) => ({ id, mkt, side, time, tx, verifying: false }))
+  );
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    let alive = true;
+    const timers = [];
+    function schedule() {
+      const id = setTimeout(() => {
+        if (!alive) return;
+        const [mkt, side] = PROOF_POOL[Math.floor(Math.random() * PROOF_POOL.length)];
+        const rowId = genHash();
+        setRows(r => [{ id: rowId, mkt, side, time: 'now', tx: genHash(), verifying: true }, ...r].slice(0, 6));
+        const settleId = setTimeout(() => {
+          setRows(r => r.map(row => row.id === rowId ? { ...row, verifying: false } : row));
+        }, 1500);
+        timers.push(settleId);
+        schedule();
+      }, 6000 + Math.random() * 3500);
+      timers.push(id);
+    }
+    schedule();
+    return () => { alive = false; timers.forEach(clearTimeout); };
+  }, []);
   return (
     <React.Fragment>
       <ViewHead title="ZK Proofs" sub="Every execution anchors an immutable receipt on the 0G Network." />
       <div className="proofs">
-        {PROOFS.map(([id, mkt, side, time, tx]) => (
-          <div className="proof-row" key={id}>
+        {rows.map(r => (
+          <div className={'proof-row' + (r.verifying ? ' verifying' : '') + (r.time === 'now' ? ' fresh' : '')} key={r.id}>
             <div className="proof-main">
-              <div className="proof-id" style={mono}>{id}</div>
+              <div className="proof-id" style={mono}>{r.id}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                <span className="pm">{mkt}</span>
-                <span className={'pside ' + (side === 'Long' ? 'l' : 's')}>{side}</span>
-                <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>· {time} ago</span>
+                <span className="pm">{r.mkt}</span>
+                <span className={'pside ' + (r.side === 'Long' ? 'l' : 's')}>{r.side}</span>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>· {r.time === 'now' ? 'just now' : r.time + ' ago'}</span>
               </div>
             </div>
             <div className="proof-checks">
               {['Source', 'Inference', 'Adherence'].map(p => (
-                <span key={p} className="pchk"><ICheck size={12} />{p}</span>
+                <span key={p} className={'pchk' + (r.verifying ? ' pending' : '')}>
+                  {r.verifying ? <span className="pchk-spin" /> : <ICheck size={12} />}{p}
+                </span>
               ))}
             </div>
             <div className="proof-anchor">
               <span style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>0G anchor</span>
-              <span style={{ ...mono, fontSize: 12, color: MINT }}>{tx}</span>
+              <span style={{ ...mono, fontSize: 12, color: r.verifying ? 'var(--text-muted)' : MINT }}>{r.verifying ? 'anchoring…' : r.tx}</span>
             </div>
           </div>
         ))}
@@ -779,6 +862,30 @@ const MARKETS = [
   ['EUR', 'EUR/USD', 'Euro', '1.0832', '-0.12%', '$210M'],
   ['WTI', 'WTI/USD', 'Crude Oil', '78.41', '+0.94%', '$33M'],
 ];
+function parseNum(s) { return parseFloat(String(s).replace(/,/g, '')); }
+function MarketRow({ row }) {
+  const [tag, sym, name, pxStr, chgStr, vol] = row;
+  const decimals = pxStr.includes('.') ? pxStr.split('.')[1].length : 0;
+  const [px, pxDir] = useTicker(parseNum(pxStr), { stepPct: 0.0009, intervalMs: 2600 });
+  const [chg] = useTicker(parseNum(chgStr), { step: 0.03, intervalMs: 2800, min: -8, max: 8 });
+  const up = chg >= 0;
+  return (
+    <tr>
+      <td>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div className="trade-dot">{tag}</div>
+          <div><div className="trade-name">{sym}</div><div className="trade-side">{name}</div></div>
+        </div>
+      </td>
+      <td style={{ ...mono, color: pxDir === -1 ? DOWN : pxDir === 1 ? MINT : '#fff', fontWeight: 600, transition: 'color .4s' }}>
+        {px.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}
+      </td>
+      <td style={{ ...mono, color: up ? MINT : DOWN, fontWeight: 700, transition: 'color .4s' }}>{(up ? '+' : '') + chg.toFixed(2) + '%'}</td>
+      <td style={{ ...mono, color: 'var(--text-secondary)' }}>{vol}</td>
+      <td style={{ textAlign: 'right' }}><span className="trade-go">Trade <IArrow size={12} /></span></td>
+    </tr>
+  );
+}
 function MarketsView() {
   return (
     <React.Fragment>
@@ -788,23 +895,7 @@ function MarketsView() {
           <table className="mtable">
             <thead><tr><th>Market</th><th>Price</th><th>24h</th><th>24h Volume</th><th></th></tr></thead>
             <tbody>
-              {MARKETS.map(([tag, sym, name, px, chg, vol]) => {
-                const up = chg[0] === '+';
-                return (
-                  <tr key={sym}>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div className="trade-dot">{tag}</div>
-                        <div><div className="trade-name">{sym}</div><div className="trade-side">{name}</div></div>
-                      </div>
-                    </td>
-                    <td style={{ ...mono, color: '#fff', fontWeight: 600 }}>{px}</td>
-                    <td style={{ ...mono, color: up ? MINT : DOWN, fontWeight: 700 }}>{chg}</td>
-                    <td style={{ ...mono, color: 'var(--text-secondary)' }}>{vol}</td>
-                    <td style={{ textAlign: 'right' }}><span className="trade-go">Trade <IArrow size={12} /></span></td>
-                  </tr>
-                );
-              })}
+              {MARKETS.map(row => <MarketRow row={row} key={row[1]} />)}
             </tbody>
           </table>
         </div>
@@ -815,7 +906,7 @@ function MarketsView() {
 
 /* ===================== SHELL ===================== */
 const NAV_MAIN = [
-  ['Overview', 'overview', IHome],
+  ['Dashboard', 'overview', IHome],
   ['Trade', 'trade', ICandle],
   ['Syfx AI', 'chat', IChat],
   ['ZK Proofs', 'proofs', IProof],
