@@ -12,19 +12,22 @@
     --k-border: rgba(255,255,255,0.07); --k-border-strong: rgba(255,255,255,0.10);
     --k-mint-border: rgba(0,229,160,0.28); --k-mint-tint: rgba(0,229,160,0.09);
   }
-  html { scrollbar-width: none; -ms-overflow-style: none; }
+  html { overflow-x: clip; scrollbar-width: none; -ms-overflow-style: none; }
   html::-webkit-scrollbar { width: 0; height: 0; display: none; }
   * { box-sizing: border-box; }
-  body { margin: 0; overflow-x: hidden; background:
+  body { margin: 0; background:
       radial-gradient(60% 40% at 50% 0%, rgba(0,229,160,0.08), transparent 70%),
       radial-gradient(50% 36% at 85% 30%, rgba(0,229,160,0.05), transparent 70%),
       var(--k-page);
-    color: var(--text-secondary); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    color: var(--text-secondary); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
   a { text-decoration: none; color: inherit; }
 
   /* nav */
   .nav { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between;
-    max-width: 1320px; margin: 0 auto; padding: 18px 24px; }
+    padding: 18px 40px;
+    background: transparent; backdrop-filter: blur(0px); border-bottom: 1px solid transparent;
+    transition: background .35s var(--ease-standard), backdrop-filter .35s var(--ease-standard), border-color .35s var(--ease-standard); }
+  .nav.scrolled { background: rgba(8,9,12,0.86); backdrop-filter: blur(14px); border-bottom: 1px solid var(--k-border); }
   .nav-brand { display: flex; align-items: center; gap: 9px; }
   .nav-brand img { height: 22px; }
   .nav-brand b { color: var(--accent-mint); font-weight: 800; font-size: 18px; letter-spacing: -0.01em; }
@@ -260,6 +263,10 @@
     window.addEventListener('load', syfxReportHeight);
     window.addEventListener('resize', syfxReportHeight);
     setTimeout(syfxReportHeight, 300);
+    var navEl = document.querySelector('.nav');
+    function onNavScroll() { navEl.classList.toggle('scrolled', window.scrollY > 24); }
+    onNavScroll();
+    window.addEventListener('scroll', onNavScroll, { passive: true });
     document.querySelectorAll('.faq-q').forEach(function (q) {
       q.addEventListener('click', function () {
         var item = q.closest('.faq-item');
