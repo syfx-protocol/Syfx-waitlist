@@ -903,13 +903,20 @@ function Dashboard() {
 /* ---------- NAV / HERO / STRIP ---------- */
 function Nav({ backToSite }) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
     document.documentElement.style.overflow = open ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; document.documentElement.style.overflow = ''; };
   }, [open]);
+  useEffect(() => {
+    function onScroll() { setScrolled(window.scrollY > 24); }
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
   return (
-    <nav className="nav">
+    <nav className={'nav' + (scrolled ? ' scrolled' : '')}>
       <a className="nav-brand" href="index.html"><img src={MARK} alt="Syfx" /><b>Syfx</b></a>
       <div className="nav-links">
         <a href="index.html#how">How It Works</a><a href="index.html#features">Features</a><a href="index.html#markets">Markets</a><a href="contact.html">Contact</a>
