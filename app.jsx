@@ -218,7 +218,7 @@ const cardSty = { background: 'var(--k-card)', border: '1px solid var(--k-border
 const mono = { fontFamily: 'var(--font-mono)' };
 
 /* ===================== OVERVIEW / DASHBOARD ===================== */
-const STAT_ICONS = [IWallet, IProof, ITrend];
+const STAT_ICONS = [IWallet, IProof, ITrend, ICandle];
 const RECENT = [
   ['XAU', 'XAU/USD', 'Long · Gold', '+5.5%', '2m'],
   ['ETH', 'ETH/USDC', 'Long · Spot', '+2.1%', '18m'],
@@ -267,6 +267,7 @@ function Overview() {
     [STAT_ICONS[0], 'Vault balance', '$' + Math.round(vault).toLocaleString(), '+3.2%', vaultDir],
     [STAT_ICONS[1], 'ZK proofs verified', proofCount.toLocaleString(), '+18%', 1],
     [STAT_ICONS[2], 'Win rate', winRate.toFixed(1) + '%', '+2.7%', 0],
+    [STAT_ICONS[3], 'Active positions', '4', '+1', 0],
   ];
   return (
     <React.Fragment>
@@ -274,7 +275,11 @@ function Overview() {
         <div className="greet">
           <h3>Good morning, Max 👋</h3>
           <p>Here's your verified trading activity today.</p>
-          <span className="live-pill"><span className="live-dot" />The Sentinel · scanning 6 sources</span>
+          <div className="status-strip">
+            <span className="status-pill"><span className="status-dot on" />Vault connected</span>
+            <span className="status-pill"><span className="status-dot on" />Sentinel scanning</span>
+            <span className="status-pill"><span className="status-dot on" />ZK engine ready</span>
+          </div>
         </div>
         <div className="greet-tools">
           <div className="search"><ISearch size={15} />Search anything…</div>
@@ -320,6 +325,31 @@ function Overview() {
             <p>Every trade runs a Triple-Layer ZK Proof. If one fails, the Vault refuses to execute.</p>
           </div>
           <span className="promo-cta">Read the proof <IArrow size={14} /></span>
+        </div>
+      </div>
+      <div className="lower2">
+        <div className="perf-panel">
+          <h4>Performance, last 7 days</h4>
+          <div className="perf-row"><span>Today</span><b style={{ color: MINT }}>+$342.10</b></div>
+          <div className="perf-row"><span>This week</span><b style={{ color: MINT }}>+$1,347.00</b></div>
+          <div className="perf-row"><span>Win rate</span><b>{winRate.toFixed(1)}%</b></div>
+          <div className="perf-row"><span>Trades (7d)</span><b>18</b></div>
+          <a className="perf-link" href="#">View all activity <IArrow size={12} /></a>
+        </div>
+        <div className="vault-panel">
+          <h4>Vault &amp; engine status</h4>
+          <div className="vault-row">
+            <span className="status-dot on" />
+            <div><b>Non-custodial vault</b><span>0x8f2a…44d1</span></div>
+          </div>
+          <div className="vault-row">
+            <span className="status-dot on" />
+            <div><b>The Sentinel</b><span>scanning 6 live sources</span></div>
+          </div>
+          <div className="vault-row">
+            <span className="status-dot on" />
+            <div><b>ZK proving engine</b><span>RISC Zero · ready</span></div>
+          </div>
         </div>
       </div>
     </React.Fragment>
