@@ -80,24 +80,27 @@
     font-size: 13px; color: var(--text-secondary); }
   .hero-trust .sep { color: var(--accent-mint); }
 
-  /* arc glow — spans full viewport width, curves up through the hero like a horizon */
-  .arc-wrap { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
-  .arc-glow {
-    position: absolute; left: 50%; top: 300px; transform: translateX(-50%);
-    width: 185vw; min-width: 1700px; aspect-ratio: 1 / 1; border-radius: 50%;
-    border: 1.5px solid rgba(0,229,160,0.55);
-    box-shadow: 0 0 100px 14px rgba(0,229,160,0.20), inset 0 0 90px rgba(0,229,160,0.09);
-    -webkit-mask-image: radial-gradient(130% 95% at 50% -8%, #000 52%, rgba(0,0,0,0.5) 72%, transparent 100%);
-            mask-image: radial-gradient(130% 95% at 50% -8%, #000 52%, rgba(0,0,0,0.5) 72%, transparent 100%);
-  }
-  .arc-blob {
-    position: absolute; left: 50%; top: 120px; transform: translateX(-50%);
-    width: min(900px, 90vw); height: 440px; border-radius: 50%;
-    background: radial-gradient(ellipse at center, rgba(0,229,160,0.18) 0%, transparent 70%);
-    filter: blur(50px);
-    animation: arcpulse 8s var(--ease-standard) infinite;
-  }
+  /* data orbit — a tilted, slowly-spinning ring of trading/network data behind the hero */
+  .orbit-wrap { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden;
+    display: flex; align-items: flex-start; justify-content: center; perspective: 1700px; }
+  .orbit-glow { position: absolute; left: 50%; top: 40px; transform: translateX(-50%);
+    width: min(760px, 86vw); height: 500px; border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(0,229,160,0.16) 0%, transparent 70%);
+    filter: blur(46px); animation: arcpulse 8s var(--ease-standard) infinite; }
+  .orbit-spin { margin-top: 74px; width: min(600px, 72vw); aspect-ratio: 1 / 1;
+    transform-style: preserve-3d; animation: orbitSpinZ 70s linear infinite; }
+  .orbit-tilt { width: 100%; height: 100%; transform-style: preserve-3d;
+    transform: rotateX(64deg) rotateZ(var(--scroll-rot, 0deg));
+    transition: transform .25s var(--ease-standard); }
+  .orbit-svg { width: 100%; height: 100%; overflow: visible; }
+  .orbit-ring { fill: none; stroke: rgba(0,229,160,0.32); stroke-width: 1; }
+  .orbit-links line { stroke: rgba(0,229,160,0.24); stroke-width: 1; }
+  .orbit-price { fill: none; stroke: var(--accent-mint); stroke-width: 2.2;
+    filter: drop-shadow(0 0 6px rgba(0,229,160,0.55)); opacity: 0.85; }
+  .orbit-nodes circle { fill: var(--accent-mint); filter: drop-shadow(0 0 4px rgba(0,229,160,0.8)); }
   @keyframes arcpulse { 0%,100% { opacity: .85; } 50% { opacity: 1; } }
+  @keyframes orbitSpinZ { from { transform: rotateZ(0deg); } to { transform: rotateZ(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .orbit-spin { animation: none; } }
 
   /* ===== DASHBOARD PREVIEW ===== */
   .dash-stage { position: relative; z-index: 3; padding: 56px 16px 96px; perspective: 1800px; }
