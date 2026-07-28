@@ -1071,10 +1071,66 @@ function Nav({ backToSite }) {
     </nav>
   );
 }
+/* tilted, slowly-spinning data ring — network nodes + a mapped price pattern, extra rotation tied to scroll */
+function DataOrbit() {
+  const tiltRef = useRef(null);
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    function onScroll() {
+      const extra = Math.min(window.scrollY * 0.05, 34);
+      if (tiltRef.current) tiltRef.current.style.setProperty('--scroll-rot', extra + 'deg');
+    }
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const nodeDefs = [
+    [12, 280], [48, 210], [95, 280], [130, 140], [168, 210],
+    [205, 280], [240, 140], [278, 210], [312, 280], [340, 140],
+  ];
+  const nodes = nodeDefs.map(([a, r]) => {
+    const rad = (a * Math.PI) / 180;
+    return { x: 300 + r * Math.cos(rad), y: 300 + r * Math.sin(rad) };
+  });
+  const links = [[0, 2], [2, 5], [5, 8], [1, 4], [4, 7], [3, 6], [6, 9], [8, 0]];
+
+  const priceVals = [0, 12, -8, 20, 4, 28, 10, 36, 18, 42, 26, 46, 30];
+  const pricePath = priceVals.map((v, i) => {
+    const a = 195 + i * 9;
+    const rad = (a * Math.PI) / 180;
+    const r = 172 + v;
+    return (i === 0 ? 'M ' : 'L ') + (300 + r * Math.cos(rad)).toFixed(1) + ' ' + (300 + r * Math.sin(rad)).toFixed(1);
+  }).join(' ');
+
+  return (
+    <div className="orbit-wrap" aria-hidden="true">
+      <div className="orbit-glow" />
+      <div className="orbit-spin">
+        <div className="orbit-tilt" ref={tiltRef}>
+          <svg viewBox="0 0 600 600" className="orbit-svg">
+            <circle cx="300" cy="300" r="280" className="orbit-ring" />
+            <circle cx="300" cy="300" r="210" className="orbit-ring" />
+            <circle cx="300" cy="300" r="140" className="orbit-ring" />
+            <g className="orbit-links">
+              {links.map(([a, b], i) => (
+                <line key={i} x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y} />
+              ))}
+            </g>
+            <path d={pricePath} className="orbit-price" />
+            <g className="orbit-nodes">
+              {nodes.map((n, i) => <circle key={i} cx={n.x} cy={n.y} r={i % 3 === 0 ? 5 : 3.4} />)}
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+}
 function Hero() {
   return (
     <header className="hero">
-      <div className="arc-wrap" aria-hidden="true"><div className="arc-blob" /><div className="arc-glow" /></div>
+      <DataOrbit />
       <div className="hero-inner">
         <Badge><IBolt size={13} />Early Access Now Open · Limited Spots</Badge>
         <h1>Trade without trust.<br /><span className="mint">Proven by math.</span></h1>
