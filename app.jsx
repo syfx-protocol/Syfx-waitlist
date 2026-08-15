@@ -1,6 +1,6 @@
 /* Syfx Platform — landing hero + multi-view product dashboard (Astral/Ostium/Kuvi-inspired, mint-on-black) */
 let Button, Badge;
-const { useState, useRef, useEffect, useLayoutEffect } = React;
+const { useState, useRef, useEffect, useLayoutEffect, useMemo } = React;
 
 const MINT = '#00E5A0';
 const DOWN = '#FF5C6C';
@@ -389,7 +389,7 @@ function ZkLiveGate() {
       </div>
       <span className="zk-live-msg">
         <IProof size={15} />
-        {allPassed ? 'All 3 proofs passed — ready to execute.' : 'Verifying ' + ZK_STEPS[step] + '…'}
+        {allPassed ? 'All 3 proofs passed. Ready to execute.' : 'Verifying ' + ZK_STEPS[step] + '…'}
       </span>
     </div>
   );
@@ -1071,66 +1071,10 @@ function Nav({ backToSite }) {
     </nav>
   );
 }
-/* tilted, slowly-spinning data ring — network nodes + a mapped price pattern, extra rotation tied to scroll */
-function DataOrbit() {
-  const tiltRef = useRef(null);
-  useEffect(() => {
-    if (prefersReducedMotion()) return;
-    function onScroll() {
-      const extra = Math.min(window.scrollY * 0.05, 34);
-      if (tiltRef.current) tiltRef.current.style.setProperty('--scroll-rot', extra + 'deg');
-    }
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  const nodeDefs = [
-    [12, 280], [48, 210], [95, 280], [130, 140], [168, 210],
-    [205, 280], [240, 140], [278, 210], [312, 280], [340, 140],
-  ];
-  const nodes = nodeDefs.map(([a, r]) => {
-    const rad = (a * Math.PI) / 180;
-    return { x: 300 + r * Math.cos(rad), y: 300 + r * Math.sin(rad) };
-  });
-  const links = [[0, 2], [2, 5], [5, 8], [1, 4], [4, 7], [3, 6], [6, 9], [8, 0]];
-
-  const priceVals = [0, 12, -8, 20, 4, 28, 10, 36, 18, 42, 26, 46, 30];
-  const pricePath = priceVals.map((v, i) => {
-    const a = 195 + i * 9;
-    const rad = (a * Math.PI) / 180;
-    const r = 172 + v;
-    return (i === 0 ? 'M ' : 'L ') + (300 + r * Math.cos(rad)).toFixed(1) + ' ' + (300 + r * Math.sin(rad)).toFixed(1);
-  }).join(' ');
-
-  return (
-    <div className="orbit-wrap" aria-hidden="true">
-      <div className="orbit-glow" />
-      <div className="orbit-spin">
-        <div className="orbit-tilt" ref={tiltRef}>
-          <svg viewBox="0 0 600 600" className="orbit-svg">
-            <circle cx="300" cy="300" r="280" className="orbit-ring" />
-            <circle cx="300" cy="300" r="210" className="orbit-ring" />
-            <circle cx="300" cy="300" r="140" className="orbit-ring" />
-            <g className="orbit-links">
-              {links.map(([a, b], i) => (
-                <line key={i} x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y} />
-              ))}
-            </g>
-            <path d={pricePath} className="orbit-price" />
-            <g className="orbit-nodes">
-              {nodes.map((n, i) => <circle key={i} cx={n.x} cy={n.y} r={i % 3 === 0 ? 5 : 3.4} />)}
-            </g>
-          </svg>
-        </div>
-      </div>
-    </div>
-  );
-}
 function Hero() {
   return (
     <header className="hero">
-      <DataOrbit />
+      <div className="arc-wrap" aria-hidden="true"><div className="arc-blob" /><div className="arc-glow" /></div>
       <div className="hero-inner">
         <Badge><IBolt size={13} />Early Access Now Open · Limited Spots</Badge>
         <h1>Trade without trust.<br /><span className="mint">Proven by math.</span></h1>
@@ -1673,10 +1617,335 @@ function AutonomySpectrum() {
   );
 }
 
+/* ===== MOBILE SHOWCASE — rotating phone screens, each a live mini-demo ===== */
+function MobileTradeScreen() {
+  const [px, dir] = useTicker(2418.5, { stepPct: 0.0009, intervalMs: 2200 });
+  return (
+    <div>
+      <div className="mob-trade-head">
+        <div>
+          <div className="mob-trade-sym">XAU/USD · Gold</div>
+          <div className="mob-trade-px" style={{ color: dir === -1 ? DOWN : dir === 1 ? MINT : '#fff', transition: 'color .4s' }}>
+            {px.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </div>
+        </div>
+        <span className="mkt-zk" style={{ fontSize: 10.5 }}><IProof size={11} />Verified</span>
+      </div>
+      <div className="mob-trade-chart"><TradeChart base={2418} /></div>
+      <div className="mob-trade-actions">
+        <div className="mob-trade-btn long">Long</div>
+        <div className="mob-trade-btn short">Short</div>
+      </div>
+      <div className="mob-sub">
+        <div className="mob-sub-label">Recent fills</div>
+        <div className="mob-hist-row"><span className="name">XAU/USD</span><span className="val" style={{ color: MINT }}>+$12.40</span><span className="time">2m</span></div>
+        <div className="mob-hist-row"><span className="name">ETH/USDC</span><span className="val" style={{ color: MINT }}>+$4.12</span><span className="time">8m</span></div>
+      </div>
+    </div>
+  );
+}
+function MobileAIScreen() {
+  return (
+    <div>
+      <div className="msg ai">
+        <div className="ai-ava"><img src={MARK} alt="" /></div>
+        <div className="bubble">gold's the cleaner trade tbh. RSI just tapped 33 👀</div>
+      </div>
+      <div className="msg user" style={{ marginTop: 14 }}>
+        <div className="bubble">let's send it</div>
+      </div>
+      <div className="msg ai" style={{ marginTop: 14 }}>
+        <div className="ai-ava"><img src={MARK} alt="" /></div>
+        <div className="bubble">on it 🔐 filled at 2,401.0. i'll watch it for you.</div>
+      </div>
+      <div className="msg ai" style={{ marginTop: 14 }}>
+        <div className="ai-ava"><img src={MARK} alt="" /></div>
+        <div className="bubble">closed at target 🎯 +5.5%. nice one.</div>
+      </div>
+    </div>
+  );
+}
+function MobileProofScreen() {
+  return (
+    <div>
+      <div className="mob-proof-id">0xa3f9…2b1</div>
+      <div className="mob-proof-checks">
+        {['Source', 'Inference', 'Adherence'].map(p => (
+          <span key={p} className="pchk" style={{ width: 'fit-content' }}><ICheck size={12} />{p}</span>
+        ))}
+      </div>
+      <div className="mob-proof-anchor">
+        <span>0G Anchor</span>
+        <b>0x9c4e…e2f1</b>
+      </div>
+      <div className="mob-sub">
+        <div className="mob-sub-label">Previous receipts</div>
+        <div className="mob-hist-row"><span className="name">ETH/USDC</span><span className="time" style={{ ...mono }}>0x71af…3b</span></div>
+        <div className="mob-hist-row"><span className="name">US500</span><span className="time" style={{ ...mono }}>0x5e90…a1</span></div>
+      </div>
+    </div>
+  );
+}
+function MobileVaultScreen() {
+  const [vault] = useTicker(48920, { stepPct: 0.005, intervalMs: 3000 });
+  const rows = [
+    ['Vault balance', '$' + Math.round(vault).toLocaleString()],
+    ['This week', '+$1,347.00'],
+    ['Active positions', '4'],
+    ['Non-custodial', 'Yes'],
+  ];
+  return (
+    <div>
+      {rows.map(([l, v]) => (
+        <div className="mob-vault-row" key={l}><span>{l}</span><b>{v}</b></div>
+      ))}
+      <div className="mob-sub">
+        <div className="mob-sub-label">Recent activity</div>
+        <div className="mob-hist-row"><span className="name">Gold long closed</span><span className="val" style={{ color: MINT }}>+$56.81</span><span className="time">2m</span></div>
+        <div className="mob-hist-row"><span className="name">ETH long opened</span><span className="val" style={{ color: 'var(--text-muted)' }}>Open</span><span className="time">18m</span></div>
+      </div>
+    </div>
+  );
+}
+const MOBILE_SCREENS = [
+  ['Trade', MobileTradeScreen],
+  ['Syfx AI', MobileAIScreen],
+  ['ZK Proof', MobileProofScreen],
+  ['Vault', MobileVaultScreen],
+];
+const IPrevIco = (p) => <Icon {...p}><path d="m15 18-6-6 6-6" /></Icon>;
+const INextIco = (p) => <Icon {...p}><path d="m9 18 6-6-6-6" /></Icon>;
+const IPauseIco = (p) => <Icon {...p}><rect x="6" y="4" width="4" height="16" rx="1" /><rect x="14" y="4" width="4" height="16" rx="1" /></Icon>;
+const IPlayIco = (p) => <Icon {...p}><path d="M7 4v16l13-8Z" /></Icon>;
+
+/* mouse-tracking 3D tilt — wraps a phone so it responds to cursor position while hovered */
+function TiltPhone({ children }) {
+  const ref = useRef(null);
+  function onMove(e) {
+    const el = ref.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    el.style.transform = `rotateX(${(-py * 16).toFixed(2)}deg) rotateY(${(px * 16).toFixed(2)}deg) scale3d(1.04,1.04,1.04)`;
+  }
+  function onLeave() {
+    const el = ref.current; if (!el) return;
+    el.style.transform = '';
+  }
+  return (
+    <div ref={ref} className="pmc-tilt" onMouseMove={onMove} onMouseLeave={onLeave} onTouchStart={onLeave}>
+      {children}
+    </div>
+  );
+}
+
+function normAngle(a) {
+  a = a % 360;
+  if (a > 180) a -= 360;
+  if (a <= -180) a += 360;
+  return a;
+}
+/* true 3D rotating carousel: items sit fixed around a circle (rotateY + translateZ),
+   the ring itself spins to bring each one to the front. pos grows without bound in
+   either direction — rotateY(720deg) looks identical to rotateY(0deg), so wrapping
+   from last to first needs no reset/teleport at all; it's just continued rotation,
+   and the far side of the circle is genuinely where the "next" screen comes from. */
+function PhoneCoverflow() {
+  const n = MOBILE_SCREENS.length;
+  const REPEATS = 3;
+  const total = n * REPEATS;
+  const STEP_DEG = 360 / total;
+  const RADIUS = 540;
+  const [pos, setPos] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    if (prefersReducedMotion() || paused) return;
+    const id = setInterval(() => setPos(p => p + 1), 4400);
+    return () => clearInterval(id);
+  }, [paused]);
+
+  const go = d => setPos(p => p + d);
+  const activeIndex = ((pos % total) + total) % total;
+
+  return (
+    <div className="mob-stage">
+      <div className="pmc-viewport">
+        <div className="pmc-ring" style={{ transform: `rotateY(${-pos * STEP_DEG}deg)` }}>
+          {Array.from({ length: total }, (_, i) => {
+            const [label, Comp] = MOBILE_SCREENS[i % n];
+            const eff = normAngle((i - pos) * STEP_DEG);
+            const absEff = Math.abs(eff);
+            const isActive = i === activeIndex;
+            // only the front phone + one immediate neighbor each side are visible —
+            // everything else fully hidden, so it always reads as a clean 3-card
+            // coverflow, on every screen size.
+            const opacity = absEff < 8 ? 1 : absEff < 40 ? 0.4 : 0;
+            const z = Math.round(100 - absEff);
+            const content = (
+              <div className="phone cut">
+                <PhoneChrome />
+                <div className="phone-screen mob-screens"><Comp /></div>
+              </div>
+            );
+            return (
+              <div
+                className={'pmc-slot' + (isActive ? ' active' : '')}
+                key={i}
+                style={{
+                  transform: `rotateY(${i * STEP_DEG}deg) translateZ(${RADIUS}px)`,
+                  opacity, zIndex: z, pointerEvents: opacity < 0.2 ? 'none' : 'auto',
+                }}
+                onClick={() => !isActive && setPos(i)}
+              >
+                {isActive ? <TiltPhone>{content}</TiltPhone> : content}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <div className="pmc-controls">
+        <button className="pmc-btn" onClick={() => go(-1)} aria-label="Previous"><IPrevIco size={16} /></button>
+        <button className="pmc-btn play" onClick={() => setPaused(p => !p)} aria-label={paused ? 'Play' : 'Pause'}>
+          {paused ? <IPlayIco size={15} /> : <IPauseIco size={15} />}
+        </button>
+        <button className="pmc-btn" onClick={() => go(1)} aria-label="Next"><INextIco size={16} /></button>
+      </div>
+    </div>
+  );
+}
+function MobileShowcase() {
+  return (
+    <section className="sec" id="mobile">
+      <div className="sec-head">
+        <span className="sec-label">MOBILE</span>
+        <h2 className="sec-h2">Your trading OS. <span className="mint">In your pocket.</span></h2>
+        <p className="sec-sub">Trade, verify, and approve from anywhere. Every position, every proof, every alert, synced live to your phone.</p>
+      </div>
+      <div className="mob-clip"><PhoneCoverflow /></div>
+    </section>
+  );
+}
+
 /* ===== MARKETS (PRD 6.7) ===== */
+/* shaded particle sphere — a rough, textured "moon" lit from one corner, not a flat glow disc.
+   base gradient does the sphere shading (light side -> dark side); particles are scattered on
+   top with per-particle brightness falling off with distance from the light source so the
+   surface reads as rough/uneven rather than a smooth flat circle; a small specular blob near
+   the light source sells the "shiny" look. */
+function ParticleGlobe({ size }) {
+  const cx = size / 2, cy = size / 2, r = size / 2;
+  // base shading is dead-centered so there's no lit-side/dark-side split at all; the only
+  // off-center touch is a small, subtle specular highlight for a hint of shine
+  const specX = 0.42, specY = 0.36;
+  const particles = useMemo(() => {
+    const rnd = mulberry32(7331);
+    const pts = [];
+    for (let i = 0; i < 260; i++) {
+      const angle = rnd() * Math.PI * 2;
+      const rr = Math.sqrt(rnd()) * r;
+      const x = cx + rr * Math.cos(angle);
+      const y = cy + rr * Math.sin(angle);
+      pts.push({
+        x, y,
+        rad: 0.6 + rnd() * 1.9,
+        op: 0.45 + rnd() * 0.5,
+        spark: rnd() > 0.95,
+      });
+    }
+    return pts;
+  }, [size]);
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="mkt-orbit-globe-svg">
+      <defs>
+        <radialGradient id="globeBase" cx="50%" cy="50%" r="75%">
+          <stop offset="0%" stopColor="#1c352b" />
+          <stop offset="60%" stopColor="#15251d" />
+          <stop offset="100%" stopColor="#0f1c16" />
+        </radialGradient>
+        <radialGradient id="globeGlow" cx="50%" cy="50%" r="75%">
+          <stop offset="0%" stopColor="rgba(0,229,160,0.4)" />
+          <stop offset="60%" stopColor="rgba(0,229,160,0.15)" />
+          <stop offset="100%" stopColor="rgba(0,229,160,0.04)" />
+        </radialGradient>
+        <radialGradient id="globeSpecular" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="rgba(222,255,240,0.7)" />
+          <stop offset="100%" stopColor="rgba(222,255,240,0)" />
+        </radialGradient>
+        <clipPath id="globeClip"><circle cx={cx} cy={cy} r={r} /></clipPath>
+      </defs>
+      <g clipPath="url(#globeClip)">
+        <circle cx={cx} cy={cy} r={r} fill="url(#globeBase)" />
+        <circle cx={cx} cy={cy} r={r} fill="url(#globeGlow)" />
+        {particles.map((p, i) => (
+          <circle
+            key={i} cx={p.x} cy={p.y} r={p.spark ? p.rad * 2.4 : p.rad}
+            fill={p.spark ? '#baffe4' : 'var(--accent-mint)'}
+            opacity={p.spark ? 0.95 : p.op}
+            className={p.spark ? 'mkt-orbit-spark' : undefined}
+            style={p.spark ? { animationDelay: (i % 9) * 0.35 + 's' } : undefined}
+          />
+        ))}
+        <circle cx={size * specX} cy={size * specY} r={r * 0.2} fill="url(#globeSpecular)" />
+      </g>
+      <circle cx={cx} cy={cy} r={r - 1} fill="none" stroke="rgba(0,229,160,0.35)" strokeWidth="1.5" />
+    </svg>
+  );
+}
+/* same category data the marquee rows below use — every asset in each category orbits,
+   including ones with no logo file (those fall back to a text ticker badge) */
 const MK_CRYPTO = [['ETH', 'Ethereum', 'eth.png'], ['BASE', 'Base', 'base.png'], ['ARB', 'Arbitrum', 'arb.png'], ['SOL', 'Solana', 'sol.png'], ['HL', 'Hyperliquid', 'hl.png'], ['TRX', 'Tron', 'trx.png'], ['SUI', 'Sui', 'sui.png'], ['BNB', 'BNB Chain', 'bnb.png'], ['OP', 'Optimism', 'op.png'], ['AVAX', 'Avalanche', 'avax.png'], ['APT', 'Aptos', 'apt.png'], ['BLST', 'Blast', 'blst.png']];
 const MK_FOREX = [['XAU', 'Gold'], ['XAG', 'Silver'], ['OIL', 'Crude Oil'], ['EUR', 'EUR/USD'], ['GBP', 'GBP/USD'], ['JPY', 'USD/JPY'], ['SPX', 'S&P 500', 'spx.png'], ['NDX', 'Nasdaq 100', 'nasdaq.png'], ['OST', 'Ostium', 'ostium.png'], ['OAN', 'OANDA (V2)', 'oanda.png']];
 const MK_INFRA = [['0G', '0G Network', 'og_network.png'], ['R0', 'RISC Zero', 'risc_zero.png'], ['PV', 'Privy', 'privy.png']];
+/* three rings, one per real market category — radii start well outside the globe (radius
+   130) so the innermost ring never renders behind it, and each ring carries every item in
+   that category, not just the ones with a logo image */
+const ORBIT_RINGS = [
+  { radius: 180, duration: 22, cw: true, badge: 44, items: MK_INFRA },
+  { radius: 245, duration: 32, cw: false, badge: 40, items: MK_FOREX },
+  { radius: 310, duration: 46, cw: true, badge: 34, items: MK_CRYPTO },
+];
+function OrbitStage() {
+  return (
+    <div className="mkt-orbit-stage" aria-hidden="true">
+      {ORBIT_RINGS.map((ring, ri) => {
+        const orbitAnim = ring.cw ? 'orbit-cw' : 'orbit-ccw';
+        const counterAnim = ring.cw ? 'counter-cw' : 'counter-ccw';
+        const n = ring.items.length;
+        return (
+          <div key={ri} className="mkt-orbit-ring" style={{ width: ring.radius * 2, height: ring.radius * 2 }}>
+            {ring.items.map(([ticker, name, logo], i) => {
+              const angle = (360 / n) * i;
+              return (
+                <div
+                  key={ticker}
+                  className="mkt-orbit-icon-arm"
+                  style={{
+                    '--start-angle': angle + 'deg', animation: `${orbitAnim} ${ring.duration}s linear infinite`,
+                    marginLeft: -(ring.badge / 2),
+                  }}
+                >
+                  <div
+                    className={'mkt-orbit-icon-badge' + (logo ? '' : ' ticker')}
+                    title={name}
+                    style={{
+                      '--counter-offset': (-angle) + 'deg', animation: `${counterAnim} ${ring.duration}s linear infinite`,
+                      width: ring.badge, height: ring.badge, marginTop: -(ring.badge / 2),
+                      fontSize: Math.round(ring.badge * 0.26),
+                    }}
+                  >
+                    {logo ? <img src={'assets/logos/' + logo} alt="" /> : <span>{ticker}</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })}
+      <div className="mkt-orbit-core"><ParticleGlobe size={260} /></div>
+    </div>
+  );
+}
 function MarqueeRow({ label, items, infra, rev, dur }) {
   const row = (hidden) => (
     <div className="mk-track" aria-hidden={hidden ? 'true' : undefined}>
@@ -1706,6 +1975,7 @@ function MarketsSection() {
         <span className="sec-label">MARKETS & INFRASTRUCTURE</span>
         <h2 className="sec-h2">One intelligence. <span className="mint">Every market.</span></h2>
       </div>
+      <OrbitStage />
       <MarqueeRow label="Crypto spot & perps" items={MK_CRYPTO} dur={30} />
       <MarqueeRow label="Forex & RWAs" items={MK_FOREX} rev dur={26} />
       <MarqueeRow label="ZK & storage infrastructure" items={MK_INFRA} infra dur={20} />
@@ -1775,7 +2045,7 @@ function CommunitiesSection() {
 const FAQS = [
   ['What is Syfx?', "Syfx is a verifiable AI operating system for traders. You build strategy in plain conversation, and every trade is backed by a triple-layer zero-knowledge proof before a single dollar moves, so you can verify the AI's work instead of trusting it blindly."],
   ['Is Syfx custodial? Can it touch my funds?', 'No. Syfx is 100% non-custodial by architecture. Your capital lives in your own smart-contract vault. Syfx can never hold, move, or freeze your funds without a verified execution proof.'],
-  ['What do early-access members get?', 'Founding members get a permanent badge on their profile, Elite tier free for 30 days, and a direct line to the team. Early access is limited. Joining the waitlist locks in your spot.'],
+  ['What do early-access members get?', 'Priority access when Syfx goes live, plus Elite tier free for 30 days. Early access is limited. Joining the waitlist locks in your spot.'],
   ['Which markets and chains are supported?', 'Crypto spot and perps across Ethereum, Base, Arbitrum, Hyperliquid and Solana, plus forex and RWAs via Ostium and OANDA. Proofs are anchored on the 0G Network, with more markets added continuously.'],
   ['How do the ZK proofs actually work?', 'Before execution, Syfx runs three independent cryptographic proofs: that the market data was real, the AI reasoned correctly, and your exact rules were followed. If any one fails, the vault physically refuses to execute. Enforced by code, not policy.'],
 ];
@@ -1848,11 +2118,10 @@ function WaitlistCTA() {
               <span className="wl-eyebrow"><span className="live-dot" />EARLY ACCESS · LIMITED SPOTS</span>
               <h2>Be first when<br /><span className="mint">Syfx goes live.</span></h2>
               <p className="wl-lead">Join the early-access list for the verifiable AI trading OS.</p>
-              <p className="wl-note">Product updates, Syfx Points announcements, and rollout news, straight to your inbox. Founding members get Elite tier free for 30 days and a permanent profile badge.</p>
+              <p className="wl-note">Product updates, Syfx Points announcements, and rollout news, straight to your inbox. Early joiners get Elite tier free for 30 days.</p>
               <div className="wl-pills">
-                <span className="wl-pill"><ICheck size={13} />Founding Member</span>
-                <span className="wl-pill"><ICheck size={13} />Elite: free 30 days</span>
-                <span className="wl-pill"><ICheck size={13} />Direct team line</span>
+                <span className="wl-pill"><ICheck size={13} />First to know, first to trade</span>
+                <span className="wl-pill"><ICheck size={13} />Elite tier, 30 days free</span>
               </div>
             </div>
             <div className="wl-right">
@@ -1867,7 +2136,7 @@ function WaitlistCTA() {
                 <span className="cbox">{agree && <ICheck size={12} />}</span>
                 I agree to receive product updates and early-access news from Syfx.
               </button>
-              <p className="wl-fine">Join <b>4,200+</b> traders on the waitlist. No spam. Unsubscribe anytime.</p>
+              <p className="wl-fine">No spam, no noise. Just launch updates, unsubscribe anytime.</p>
             </div>
           </React.Fragment>
         ) : (
@@ -1956,7 +2225,7 @@ function Page() {
   return (
     <React.Fragment>
       <Nav /><Hero /><Dashboard /><Strip />
-      <ProblemSection /><SolutionSection /><HowItWorks /><FeaturesSection /><AutonomySpectrum /><MarketsSection /><CredibilitySection />
+      <ProblemSection /><SolutionSection /><HowItWorks /><FeaturesSection /><AutonomySpectrum /><MobileShowcase /><MarketsSection /><CredibilitySection />
       <CommunitiesSection /><FAQSection /><WaitlistCTA /><Footer />
     </React.Fragment>
   );
