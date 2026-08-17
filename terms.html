@@ -1,0 +1,159 @@
+<!-- @startingPoint section="Pages" subtitle="Syfx terms of service" viewport="1280x900" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Terms of Service | Syfx</title>
+<link rel="icon" type="image/png" href="./assets/syfx-mark.png" />
+<link rel="stylesheet" href="./styles.css" />
+<style>
+  :root {
+    --k-page: #08090C; --k-surface: #0C0F14; --k-card: #10141B; --k-card-2: #0E1218;
+    --k-border: rgba(255,255,255,0.07); --k-border-strong: rgba(255,255,255,0.10);
+    --k-mint-border: rgba(0,229,160,0.28); --k-mint-tint: rgba(0,229,160,0.09);
+  }
+  html { overflow-x: clip; scrollbar-width: none; -ms-overflow-style: none; }
+  html::-webkit-scrollbar { width: 0; height: 0; display: none; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background:
+      radial-gradient(60% 40% at 50% 0%, rgba(0,229,160,0.08), transparent 70%),
+      radial-gradient(50% 36% at 85% 30%, rgba(0,229,160,0.05), transparent 70%),
+      var(--k-page);
+    color: var(--text-secondary); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  a { text-decoration: none; color: inherit; }
+
+  .nav { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 40px;
+    background: rgba(8,9,12,0.86); backdrop-filter: blur(14px); border-bottom: 1px solid var(--k-border); }
+  .nav-brand { display: flex; align-items: center; gap: 9px; }
+  .nav-brand img { height: 22px; }
+  .nav-brand b { color: var(--accent-mint); font-weight: 800; font-size: 18px; letter-spacing: -0.01em; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 20px; border-radius: 50px;
+    background: var(--accent-mint); color: #09090B; font-weight: 700; font-size: 14px; border: none; cursor: pointer;
+    transition: background .18s, transform .12s; }
+  .btn:hover { background: #00C487; }
+  .btn:active { transform: scale(0.97); }
+
+  .wrap { max-width: 800px; margin: 0 auto; padding: 64px 24px 96px; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-mint); }
+  h1 { font-size: clamp(32px, 5vw, 48px); font-weight: 800; line-height: 1.06; letter-spacing: -0.02em; color: #fff; margin: 18px 0 0; }
+  .updated { font-size: 13px; color: var(--text-muted); margin: 14px 0 0; }
+
+  .legal { margin-top: 44px; display: flex; flex-direction: column; gap: 36px; }
+  .legal h2 { font-size: 19px; font-weight: 700; color: #fff; margin: 0 0 12px; letter-spacing: -0.01em; }
+  .legal p { font-size: 14.5px; line-height: 1.75; color: var(--text-secondary); margin: 0 0 12px; }
+  .legal p:last-child { margin-bottom: 0; }
+  .legal ul { margin: 0 0 12px; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+  .legal li { font-size: 14.5px; line-height: 1.65; color: var(--text-secondary); }
+  .legal b { color: #fff; font-weight: 600; }
+  .legal a.inline { color: var(--accent-mint); }
+  .legal a.inline:hover { text-decoration: underline; }
+  .warn { background: rgba(255,92,108,0.08); border: 1px solid rgba(255,92,108,0.28); border-radius: 12px; padding: 14px 16px;
+    font-size: 13.5px; line-height: 1.6; color: #FF5C6C; margin-top: 8px; }
+
+  .foot { position: relative; border-top: 1px solid var(--k-border); background: var(--k-surface); }
+  .foot-bar { max-width: 1320px; margin: 0 auto; padding: 24px; display: flex; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap; align-items: center; }
+  .foot-bar span, .foot-bar a { font-size: 12.5px; color: var(--text-muted); }
+  .foot-bar a:hover { color: var(--accent-mint); }
+  .foot-links { display: flex; gap: 18px; }
+  @media (max-width: 560px) { .wrap { padding: 44px 18px 72px; } }
+</style>
+</head>
+<body>
+  <nav class="nav">
+    <a class="nav-brand" href="index.html"><img src="./assets/syfx-mark.png" alt="Syfx" /><b>Syfx</b></a>
+    <a class="btn" href="index.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>Back to site</a>
+  </nav>
+
+  <div class="wrap">
+    <span class="eyebrow"><span></span>LEGAL</span>
+    <h1>Terms of Service</h1>
+    <p class="updated">Last updated: August 17, 2026</p>
+
+    <div class="legal">
+      <section>
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing syfxfinance.com or joining the Syfx waitlist, you agree to these Terms of Service. If you don't agree, please don't use the site or the platform.</p>
+      </section>
+
+      <section>
+        <h2>2. What Syfx Is</h2>
+        <p>Syfx is a non-custodial AI operating system for traders. You describe strategy in plain conversation, and trades execute only after a triple-layer zero-knowledge proof verifies the underlying data, the AI's reasoning, and your own rules were followed. Syfx is currently in a pre-launch, early-access phase — the waitlist collects your email so we can notify you when the platform opens.</p>
+      </section>
+
+      <section>
+        <h2>3. Eligibility</h2>
+        <p>You must be at least 18 years old and legally permitted to use trading and digital asset services in your jurisdiction to use Syfx. It is your responsibility to determine whether use of Syfx is lawful where you live.</p>
+      </section>
+
+      <section>
+        <h2>4. No Financial Advice</h2>
+        <p>Nothing on this site or within the Syfx platform constitutes financial, investment, legal, or tax advice. Syfx AI provides analysis and executes strategies you define — it does not guarantee outcomes, and past performance shown anywhere on this site (including illustrative demo data) is not indicative of future results.</p>
+      </section>
+
+      <section>
+        <h2>5. Risk Disclosure</h2>
+        <div class="warn">Trading digital assets, forex, and other markets carries substantial risk of loss, including the potential loss of your entire capital. AI-driven strategies do not eliminate this risk. Only trade with funds you can afford to lose.</div>
+      </section>
+
+      <section>
+        <h2>6. Non-Custodial Architecture</h2>
+        <p>Syfx never holds, controls, or has the ability to move your funds. Your capital lives in a smart-contract vault you control. This means:</p>
+        <ul>
+          <li>You are solely responsible for the security of your own wallet and private keys.</li>
+          <li>Syfx cannot reverse, refund, or recover a transaction on your behalf.</li>
+          <li>Loss of your private keys or wallet access is not something Syfx can remedy.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>7. Acceptable Use</h2>
+        <p>You agree not to use Syfx to violate any applicable law, attempt to exploit or disrupt the platform's smart contracts or infrastructure, or misrepresent your identity or eligibility.</p>
+      </section>
+
+      <section>
+        <h2>8. Intellectual Property</h2>
+        <p>The Syfx name, logo, and site content are owned by Syfx. Core proof and vault contracts are intended to be open-source and auditable — see our GitHub once published for licensing terms specific to that code.</p>
+      </section>
+
+      <section>
+        <h2>9. Disclaimers &amp; Limitation of Liability</h2>
+        <p>The site and platform are provided "as is" without warranties of any kind. To the fullest extent permitted by law, Syfx is not liable for indirect, incidental, or consequential damages, including losses from trading activity, smart contract risk, network outages, or third-party infrastructure (including blockchain networks and proving systems Syfx relies on but does not control).</p>
+      </section>
+
+      <section>
+        <h2>10. Changes to These Terms</h2>
+        <p>We may update these Terms as the product evolves, particularly as we move from waitlist to full platform launch. Material changes will be reflected by updating the "Last updated" date above.</p>
+      </section>
+
+      <section>
+        <h2>11. Contact</h2>
+        <p>Questions about these Terms can be sent through our <a class="inline" href="contact.html">contact page</a>.</p>
+      </section>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <div class="foot-bar">
+      <span>© 2026 Syfx. Digital assets involve substantial risk of loss.</span>
+      <div class="foot-links">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function syfxReportHeight() {
+      try { parent.postMessage({ type: 'syfx-h', h: document.body.scrollHeight }, '*'); } catch (e) {}
+    }
+    window.addEventListener('load', syfxReportHeight);
+    window.addEventListener('resize', syfxReportHeight);
+    setTimeout(syfxReportHeight, 300);
+  </script>
+</body>
+</html>

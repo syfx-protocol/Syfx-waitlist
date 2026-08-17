@@ -5,6 +5,14 @@ const { useState, useRef, useEffect, useLayoutEffect, useMemo } = React;
 const MINT = '#00E5A0';
 const DOWN = '#FF5C6C';
 const MARK = 'assets/syfx-mark.png';
+/* real accounts only — Discord/GitHub stay '#' (no live link yet) until there's a real one to point to */
+const SOCIAL = {
+  x: 'https://x.com/Syfx_ai',
+  telegram: 'https://t.me/+AnPKya5BjcQ1YThk',
+  discord: '#',
+  linkedin: 'https://www.linkedin.com/company/syfx-ai/',
+  github: '#',
+};
 
 /* ---------- live-ticker hook: drives the "automated live dashboard" number/chart motion ---------- */
 function prefersReducedMotion() {
@@ -2016,10 +2024,10 @@ function CredibilitySection() {
 
 /* ===== OUR COMMUNITIES ===== */
 const COMMS = [
-  ['X / Twitter', <IX size={26} />],
-  ['Telegram', <ISend size={26} />],
-  ['Discord', <IDiscord size={26} />],
-  ['LinkedIn', <ILinkedIn size={26} />],
+  ['X / Twitter', <IX size={26} />, SOCIAL.x],
+  ['Telegram', <ISend size={26} />, SOCIAL.telegram],
+  ['Discord', <IDiscord size={26} />, SOCIAL.discord],
+  ['LinkedIn', <ILinkedIn size={26} />, SOCIAL.linkedin],
 ];
 function CommunitiesSection() {
   return (
@@ -2030,8 +2038,8 @@ function CommunitiesSection() {
         <p className="sec-sub">Syfx is built in the open. Follow the journey, ask questions, and shape what comes next. Pick your corner of the community below.</p>
       </div>
       <div className="comm-row">
-        {COMMS.map(([name, icon]) => (
-          <a className="comm" href="#" key={name} aria-label={name}>
+        {COMMS.map(([name, icon, url]) => (
+          <a className="comm" href={url} target={url === '#' ? undefined : '_blank'} rel={url === '#' ? undefined : 'noopener noreferrer'} key={name} aria-label={name}>
             <span className="comm-ico">{icon}</span>
             <span className="comm-name">{name}</span>
           </a>
@@ -2164,17 +2172,17 @@ function Footer() {
           <div className="row"><img src={MARK} alt="" /><b>Syfx</b></div>
           <p>The verifiable AI operating system for traders. Trade without trust. Proven by math.</p>
           <div className="foot-social">
-            <a href="#" aria-label="X"><IX size={16} /></a>
-            <a href="#" aria-label="Telegram"><ISend size={16} /></a>
-            <a href="#" aria-label="Discord"><IDiscord size={16} /></a>
-            <a href="#" aria-label="LinkedIn"><ILinkedIn size={16} /></a>
-            <a href="#" aria-label="GitHub"><IGithub size={16} /></a>
+            <a href={SOCIAL.x} target="_blank" rel="noopener noreferrer" aria-label="X"><IX size={16} /></a>
+            <a href={SOCIAL.telegram} target="_blank" rel="noopener noreferrer" aria-label="Telegram"><ISend size={16} /></a>
+            <a href={SOCIAL.discord} aria-label="Discord"><IDiscord size={16} /></a>
+            <a href={SOCIAL.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><ILinkedIn size={16} /></a>
+            <a href={SOCIAL.github} aria-label="GitHub"><IGithub size={16} /></a>
           </div>
         </div>
         <div className="foot-links">
           <div className="foot-col">
             <h5>Product</h5>
-            <a href="#how">How It Works</a><a href="#features">Features</a><a href="#markets">Markets</a><a href="#waitlist">Join Waitlist</a>
+            <a href="index.html#how">How It Works</a><a href="index.html#features">Features</a><a href="index.html#markets">Markets</a><a href="waitlist.html">Join Waitlist</a>
           </div>
           <div className="foot-col">
             <h5>Company</h5>
@@ -2182,14 +2190,16 @@ function Footer() {
           </div>
           <div className="foot-col">
             <h5>Connect</h5>
-            <a href="#">X / Twitter</a><a href="#">Telegram</a><a href="#">Discord</a>
+            <a href={SOCIAL.x} target="_blank" rel="noopener noreferrer">X / Twitter</a>
+            <a href={SOCIAL.telegram} target="_blank" rel="noopener noreferrer">Telegram</a>
+            <a href={SOCIAL.discord}>Discord</a>
           </div>
         </div>
       </div>
       <div className="foot-bar">
         <span className="foot-disc">Early access is limited. Digital assets involve substantial risk of loss.</span>
         <div className="foot-bar-right">
-          <a href="#">Privacy</a><a href="#">Terms</a>
+          <a href="privacy.html">Privacy</a><a href="terms.html">Terms</a>
           <span>© 2026 Syfx</span>
         </div>
       </div>
