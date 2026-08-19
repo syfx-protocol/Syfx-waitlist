@@ -290,7 +290,7 @@
       });
     });
     var IS_LOCAL = ['localhost', '127.0.0.1'].indexOf(location.hostname) !== -1;
-    var WAITLIST_API_URL = IS_LOCAL ? 'http://localhost:8000/waitlist' : 'https://syfx-waitlist-production.up.railway.app/waitlist';
+    var WAITLIST_API_URL = IS_LOCAL ? 'http://localhost:8000/waitlist' : 'https://eobsafimbdjjlkdeldsv.supabase.co/functions/v1/waitlist';
     document.getElementById('wform').addEventListener('submit', function (e) {
       e.preventDefault();
       var email = document.getElementById('email').value.trim();
