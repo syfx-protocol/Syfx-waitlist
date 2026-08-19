@@ -2083,7 +2083,7 @@ function FAQSection() {
 
 /* ===== WAITLIST CTA ===== */
 const IS_LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
-const WAITLIST_API_URL = IS_LOCAL ? 'http://localhost:8000/waitlist' : 'https://syfx-waitlist-production.up.railway.app/waitlist';
+const WAITLIST_API_URL = IS_LOCAL ? 'http://localhost:8000/waitlist' : 'https://eobsafimbdjjlkdeldsv.supabase.co/functions/v1/waitlist';
 
 function WaitlistCTA() {
   const [email, setEmail] = useState('');
