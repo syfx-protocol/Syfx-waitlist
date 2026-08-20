@@ -1,4 +1,6 @@
 main.py
+email_template.py
 requirements.txt
 Procfile
 waitlist.db
+supabase

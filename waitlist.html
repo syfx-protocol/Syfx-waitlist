@@ -190,6 +190,11 @@
     .stage { padding: 32px 16px 56px; min-height: 480px; }
     .card { padding: 34px 22px; border-radius: 22px; }
     .input-row { flex-direction: column; }
+    /* flex:1 on the email input (meant to grow it horizontally in the row layout) sets
+       flex-basis:0%, which in a column layout controls HEIGHT instead of width and silently
+       overrides the explicit height:54px — the input collapses toward its min-content height.
+       flex:none restores the explicit height once stacked. */
+    .input-row input[type=email] { flex: none; width: 100%; }
     .input-row .btn.join { width: 100%; }
     .counters { gap: 18px; flex-wrap: wrap; }
     .pills { gap: 7px; }
