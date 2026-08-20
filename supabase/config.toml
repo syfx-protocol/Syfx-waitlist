@@ -1,0 +1,12 @@
+project_id = "eobsafimbdjjlkdeldsv"
+
+# Both functions are called by anonymous visitors submitting the waitlist form or clicking
+# the unsubscribe link in an email — neither requires a logged-in Supabase user, so JWT
+# verification is turned off here. Rate limiting and spam protection are handled inside the
+# functions themselves (main.py's old per-IP limiter, ported to waitlist/index.ts), not by
+# Supabase's auth layer.
+[functions.waitlist]
+verify_jwt = false
+
+[functions.unsubscribe]
+verify_jwt = false
