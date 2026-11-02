@@ -35,7 +35,7 @@ The site is a **client-side-only React app with no build step**. Each page loads
 - **`assets/`** — `syfx-mark.png` / `syfx-wordmark.png`, mint-on-transparent logo marks.
 - **`_ds_bundle.js`** — a prebuilt bundle of shared UI primitives (`Button`, `Badge`, etc.) used by `app.jsx`, exposed as `window.SyfxDesignSystem_5de6e8`.
 
-**Note:** the waitlist API URL is hardcoded to `http://localhost:8000/waitlist` in both `app.jsx` and `waitlist.html` — update this before deploying anywhere beyond local development.
+**Note:** the waitlist API URL automatically points to `https://syfx-waitlist-production.up.railway.app/waitlist` in production (or `http://localhost:8000/waitlist` when served locally on localhost/127.0.0.1).
 
 ## Files
 - `index.html`, `how-it-works.html`, `contact.html`, `waitlist.html` — frontend pages.

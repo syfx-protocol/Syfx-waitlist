@@ -2083,7 +2083,7 @@ function FAQSection() {
 
 /* ===== WAITLIST CTA ===== */
 const IS_LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
-const WAITLIST_API_URL = IS_LOCAL ? 'http://localhost:8000/waitlist' : 'https://eobsafimbdjjlkdeldsv.supabase.co/functions/v1/waitlist';
+const WAITLIST_API_URL = IS_LOCAL ? 'http://localhost:8000/waitlist' : 'https://syfx-waitlist-production.up.railway.app/waitlist';
 
 function WaitlistCTA() {
   const [email, setEmail] = useState('');
@@ -2110,7 +2110,10 @@ function WaitlistCTA() {
       setAlreadyJoined(data.status === 'already_joined');
       setDone(true);
     } catch (err) {
-      setError(err.message || 'Connection error. Please try again later.');
+      const msg = err.message === 'Failed to fetch'
+        ? 'Could not connect to the waitlist server. Please try again later.'
+        : (err.message || 'Connection error. Please try again later.');
+      setError(msg);
     } finally {
       setLoading(false);
     }
