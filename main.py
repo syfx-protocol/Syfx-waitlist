@@ -66,7 +66,8 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 # onboarding@resend.dev only works to your own email address. For live signups,
 # we default to the verified domain subdomain 'send.syfxfinance.com'.
 FROM_EMAIL = os.environ.get("FROM_EMAIL", "Syfx <trade@send.syfxfinance.com>")
-ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "max@syfxfinance.com")
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "ogbodomaxwell23@gmail.com")
+ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "syfx2026")
 PUBLIC_API_URL = os.environ.get("PUBLIC_API_URL", "https://syfx-waitlist-production.up.railway.app")
 
 async def send_welcome_email(to_email: str):
@@ -176,6 +177,55 @@ async def unsubscribe(email: str):
         <p style="color:#9AA3B2;font-size:14px;margin:0;">You won't receive any more emails from Syfx.</p>
       </div>
     </body></html>
+    """
+
+@app.get("/admin/waitlist", response_class=HTMLResponse)
+async def view_waitlist(secret: str = ""):
+    if secret != ADMIN_SECRET:
+        raise HTTPException(status_code=401, detail="Unauthorized: Pass ?secret=syfx2026")
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, email, timestamp, unsubscribed FROM waitlist ORDER BY id DESC")
+    rows = cursor.fetchall()
+    conn.close()
+
+    html_rows = "".join(
+        f"<tr><td style='padding:10px 14px;border-bottom:1px solid #1F242F;'>{r[0]}</td>"
+        f"<td style='padding:10px 14px;border-bottom:1px solid #1F242F;font-weight:600;color:#00d26a;'>{r[1]}</td>"
+        f"<td style='padding:10px 14px;border-bottom:1px solid #1F242F;color:#8F9CAE;'>{r[2]}</td>"
+        f"<td style='padding:10px 14px;border-bottom:1px solid #1F242F;'>{'Yes' if r[3] else 'No'}</td></tr>"
+        for r in rows
+    )
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head><title>Syfx Waitlist Dashboard</title><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+    <body style="margin:0;background:#08090C;color:#F5F7FA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;padding:32px 20px;">
+        <div style="max-width:860px;margin:0 auto;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+                <div>
+                    <h1 style="font-size:24px;margin:0 0 6px;">Syfx Waitlist</h1>
+                    <p style="color:#8F9CAE;margin:0;font-size:14px;">Total subscribers: <strong style="color:#00d26a;">{len(rows)}</strong></p>
+                </div>
+            </div>
+            <div style="background:#0F1218;border:1px solid #1F242F;border-radius:12px;overflow:hidden;">
+                <table style="width:100%;border-collapse:collapse;text-align:left;font-size:14px;">
+                    <thead>
+                        <tr style="background:#161B24;color:#B8C4D6;">
+                            <th style="padding:12px 14px;">#</th>
+                            <th style="padding:12px 14px;">Email</th>
+                            <th style="padding:12px 14px;">Joined (UTC)</th>
+                            <th style="padding:12px 14px;">Unsubscribed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {html_rows if rows else "<tr><td colspan='4' style='padding:32px;text-align:center;color:#666;'>No subscribers yet</td></tr>"}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+    </html>
     """
 
 if __name__ == "__main__":
