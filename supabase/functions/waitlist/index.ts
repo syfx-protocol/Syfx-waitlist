@@ -14,7 +14,7 @@ const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
 // onboarding@resend.dev works out of the box with any Resend account for testing, before a
 // custom sending domain (e.g. hello@syfxfinance.com) is set up and DNS-verified.
-const FROM_EMAIL = Deno.env.get("FROM_EMAIL") ?? "Syfx <onboarding@resend.dev>";
+const FROM_EMAIL = Deno.env.get("FROM_EMAIL") ?? "Syfx <trade@send.syfxfinance.com>";
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 

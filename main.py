@@ -63,9 +63,10 @@ rate_limit_store = {}
 # hardcoded here. Without it, signups still work — the email send is just skipped, so a
 # missing/misconfigured key never breaks the waitlist itself.
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
-# onboarding@resend.dev works out of the box with any Resend account for testing, before
-# a custom sending domain (e.g. hello@syfxfinance.com) is set up and DNS-verified.
-FROM_EMAIL = os.environ.get("FROM_EMAIL", "Syfx <onboarding@resend.dev>")
+# onboarding@resend.dev only works to your own email address. For live signups,
+# we default to the verified domain subdomain 'send.syfxfinance.com'.
+FROM_EMAIL = os.environ.get("FROM_EMAIL", "Syfx <trade@send.syfxfinance.com>")
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "max@syfxfinance.com")
 PUBLIC_API_URL = os.environ.get("PUBLIC_API_URL", "https://syfx-waitlist-production.up.railway.app")
 
 async def send_welcome_email(to_email: str):
@@ -86,9 +87,36 @@ async def send_welcome_email(to_email: str):
                 },
             )
             if resp.status_code >= 400:
-                print(f"Resend error {resp.status_code}: {resp.text}")
+                print(f"Resend welcome email error {resp.status_code}: {resp.text}")
     except Exception as e:
         print(f"Failed to send welcome email: {e}")
+
+async def send_admin_notification(subscriber_email: str):
+    if not RESEND_API_KEY or not ADMIN_EMAIL:
+        return
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.post(
+                "https://api.resend.com/emails",
+                headers={"Authorization": f"Bearer {RESEND_API_KEY}", "Content-Type": "application/json"},
+                json={
+                    "from": FROM_EMAIL,
+                    "to": [ADMIN_EMAIL],
+                    "subject": f"New Syfx Waitlist Signup: {subscriber_email}",
+                    "html": f"""
+                    <div style="font-family: sans-serif; padding: 20px; color: #111;">
+                        <h2>New Waitlist Signup</h2>
+                        <p>A new user just joined the Syfx waitlist:</p>
+                        <p style="font-size: 18px; font-weight: bold; color: #00d26a;">{subscriber_email}</p>
+                        <p style="font-size: 12px; color: #888;">Time: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}</p>
+                    </div>
+                    """,
+                },
+            )
+            if resp.status_code >= 400:
+                print(f"Resend admin notification error {resp.status_code}: {resp.text}")
+    except Exception as e:
+        print(f"Failed to send admin notification: {e}")
 
 @app.post("/waitlist")
 async def join_waitlist(request: Request, entry: WaitlistEntry, background_tasks: BackgroundTasks):
@@ -120,9 +148,9 @@ async def join_waitlist(request: Request, entry: WaitlistEntry, background_tasks
         conn.commit()
         conn.close()
 
-        # runs after the response is sent — a slow or failing email provider never delays
-        # or breaks the signup itself
+        # runs in background after response is sent
         background_tasks.add_task(send_welcome_email, entry.email)
+        background_tasks.add_task(send_admin_notification, entry.email)
 
         return {"status": "success", "message": "Welcome to Syfx AI"}
 
