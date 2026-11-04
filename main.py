@@ -202,10 +202,16 @@ async def view_waitlist(secret: str = ""):
     <head><title>Syfx Waitlist Dashboard</title><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
     <body style="margin:0;background:#08090C;color:#F5F7FA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;padding:32px 20px;">
         <div style="max-width:860px;margin:0 auto;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
                 <div>
                     <h1 style="font-size:24px;margin:0 0 6px;">Syfx Waitlist</h1>
                     <p style="color:#8F9CAE;margin:0;font-size:14px;">Total subscribers: <strong style="color:#00d26a;">{len(rows)}</strong></p>
+                </div>
+                <div style="background:#11151C;border:1px solid #1F242F;border-radius:8px;padding:8px 14px;font-size:12px;">
+                    <div>Resend API Key: <strong style="color:{'#00d26a' if RESEND_API_KEY else '#FF5C6C'}">{'Configured (' + RESEND_API_KEY[:6] + '...)' if RESEND_API_KEY else 'MISSING ON RAILWAY'}</strong></div>
+                    <div style="margin-top:4px;">Sender: <span style="color:#8F9CAE;">{FROM_EMAIL}</span></div>
+                    <div style="margin-top:4px;">Admin Alert: <span style="color:#8F9CAE;">{ADMIN_EMAIL}</span></div>
+                    <div style="margin-top:6px;"><a href="/admin/test-email?secret={ADMIN_SECRET}&to={ADMIN_EMAIL}" target="_blank" style="color:#00d26a;text-decoration:underline;">Click to test sending an email now</a></div>
                 </div>
             </div>
             <div style="background:#0F1218;border:1px solid #1F242F;border-radius:12px;overflow:hidden;">
@@ -227,6 +233,41 @@ async def view_waitlist(secret: str = ""):
     </body>
     </html>
     """
+
+@app.get("/admin/test-email")
+async def test_email(secret: str = "", to: str = "ogbodomaxwell23@gmail.com"):
+    if secret != ADMIN_SECRET:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    if not RESEND_API_KEY:
+        return {
+            "status": "missing_api_key",
+            "message": "RESEND_API_KEY is not set on Railway! Go to Railway Dashboard -> your waitlist service -> Variables -> add RESEND_API_KEY."
+        }
+    
+    unsubscribe_url = f"{PUBLIC_API_URL}/unsubscribe?email={to}"
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.post(
+                "https://api.resend.com/emails",
+                headers={"Authorization": f"Bearer {RESEND_API_KEY}", "Content-Type": "application/json"},
+                json={
+                    "from": FROM_EMAIL,
+                    "to": [to],
+                    "subject": "Test: You're on the list. Welcome to Syfx.",
+                    "html": welcome_email_html(unsubscribe_url),
+                },
+            )
+            return {
+                "status": "success" if resp.status_code < 400 else "resend_error",
+                "status_code": resp.status_code,
+                "resend_response": resp.json() if resp.headers.get("content-type", "").startswith("application/json") else resp.text,
+                "sent_to": to,
+                "from_email": FROM_EMAIL
+            }
+    except Exception as e:
+        return {"status": "network_error", "error": str(e)}
+
+
 
 if __name__ == "__main__":
     # Local dev default (port 8000); production uses the Procfile's uvicorn command,
